@@ -7,10 +7,13 @@ import morgan from 'morgan';
 import APIs_V1 from './routes/v1';
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware';
 import { corsOptions } from './config/cors';
+import { closeDb, connection } from './config/connectDb';
 
 const hostname = process.env.HOST || 'localhost';
 const port = process.env.PORT || 8017;
 const app = express();
+
+connection();
 
 app.use(morgan('dev'));
 app.use(cors(corsOptions));
@@ -27,4 +30,5 @@ app.listen(port, () => {
 exitHook(() => {
     // eslint-disable-next-line no-console
     console.log('Exiting app');
+    closeDb();
 });
