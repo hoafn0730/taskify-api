@@ -2,7 +2,7 @@ import db from '~/models';
 
 const getDetail = async (columnId) => {
     try {
-        const data = await db.Column.findOne({ id: columnId });
+        const data = await db.Column.findOne({ where: { id: columnId } });
 
         return data;
     } catch (error) {
@@ -56,9 +56,23 @@ const destroy = async (columnId) => {
     }
 };
 
+const moveColumn = async (data) => {
+    try {
+        const prevColumn = await getDetail(data.prevColumnId);
+        const nextColumn = await getDetail(data.nextColumnId);
+        update(data.prevColumnId, { position: nextColumn.position });
+        update(data.nextColumnId, { position: prevColumn.position });
+
+        return { message: 'Successfully' };
+    } catch (error) {
+        throw error;
+    }
+};
+
 export default {
     getDetail,
     store,
     update,
     destroy,
+    moveColumn,
 };

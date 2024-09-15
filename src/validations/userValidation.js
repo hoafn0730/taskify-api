@@ -4,8 +4,9 @@ import ApiError from '~/utils/ApiError';
 
 const store = async (req, res, next) => {
     const correctCondition = Joi.object({
-        boardId: Joi.number().required(),
         title: Joi.string().required().min(3).max(50).trim().strict(),
+        description: Joi.string().required().min(3).max(255).trim().strict(),
+        type: Joi.string().valid('public', 'private').required(),
     });
 
     try {
@@ -19,8 +20,9 @@ const store = async (req, res, next) => {
 
 const update = async (req, res, next) => {
     const correctCondition = Joi.object({
-        boardId: Joi.number(),
         title: Joi.string().min(3).max(50).trim().strict(),
+        description: Joi.string().min(3).max(255).trim().strict(),
+        type: Joi.string().valid('public', 'private'),
     });
 
     try {
@@ -46,24 +48,8 @@ const destroy = async (req, res, next) => {
     }
 };
 
-const moveColumn = async (req, res, next) => {
-    const correctCondition = Joi.object({
-        prevColumnId: Joi.number().required(),
-        nextColumnId: Joi.number().required(),
-    });
-
-    try {
-        await correctCondition.validateAsync(req.body, { abortEarly: false });
-
-        next();
-    } catch (error) {
-        next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message));
-    }
-};
-
-export const columnValidation = {
+export const userValidation = {
     store,
     update,
     destroy,
-    moveColumn,
 };

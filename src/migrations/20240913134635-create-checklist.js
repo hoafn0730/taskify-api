@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Columns', {
+        await queryInterface.createTable('Checklists', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -10,6 +10,9 @@ module.exports = {
                 type: Sequelize.INTEGER,
             },
             boardId: {
+                type: Sequelize.INTEGER,
+            },
+            cardId: {
                 type: Sequelize.INTEGER,
             },
             title: {
@@ -26,6 +29,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Columns');
+        await queryInterface.dropTable('Checklists');
     },
 };

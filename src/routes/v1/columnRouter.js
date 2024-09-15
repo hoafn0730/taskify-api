@@ -4,6 +4,8 @@ import { columnValidation } from '~/validations/columnValidation';
 
 const router = express.Router();
 
+router.put('/moving_column', columnValidation.moveColumn, columnController.moveColumn);
+
 router.get('/:id', columnController.getDetail);
 router.post('/', columnValidation.store, columnController.store);
 router.put('/:id', columnValidation.update, columnController.update);

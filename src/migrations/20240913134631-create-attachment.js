@@ -2,18 +2,24 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Columns', {
+        await queryInterface.createTable('Attachments', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER,
             },
-            boardId: {
+            cardId: {
                 type: Sequelize.INTEGER,
             },
-            title: {
+            fileName: {
                 type: Sequelize.STRING,
+            },
+            fileType: {
+                type: Sequelize.STRING,
+            },
+            fileUrl: {
+                type: Sequelize.TEXT,
             },
             createdAt: {
                 allowNull: false,
@@ -26,6 +32,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Columns');
+        await queryInterface.dropTable('Attachments');
     },
 };

@@ -16,7 +16,6 @@ const getDetail = async (req, res, next) => {
 const store = async (req, res, next) => {
     try {
         const column = await columnService.store(req.body);
-        console.log('🚀 ~ store ~ column:', column);
 
         res.status(StatusCodes.CREATED).json(column);
     } catch (error) {
@@ -48,4 +47,14 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export default { getDetail, store, update, destroy };
+const moveColumn = async (req, res, next) => {
+    try {
+        const resData = await columnService.moveColumn(req.body);
+
+        res.status(StatusCodes.OK).json(resData);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export default { getDetail, store, update, destroy, moveColumn };

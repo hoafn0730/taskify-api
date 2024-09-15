@@ -2,6 +2,19 @@ import { StatusCodes } from 'http-status-codes';
 
 import boardService from '~/services/boardService';
 
+const get = async (req, res, next) => {
+    try {
+        const page = req.query.page;
+        const pageSize = req.query.pageSize;
+        const query = req.query.q;
+        const boards = await boardService.get({ page, pageSize, query });
+
+        res.status(StatusCodes.OK).json({ data: boards });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const getDetail = async (req, res, next) => {
     try {
         const boardId = req.params.id;
@@ -46,4 +59,4 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export default { getDetail, store, update, destroy };
+export default { get, getDetail, store, update, destroy };

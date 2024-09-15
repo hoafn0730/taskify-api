@@ -1,11 +1,54 @@
+import { cloneDeep } from 'lodash';
 import db from '~/models';
 import { slugify } from '~/utils/formatters';
 
+const get = async ({ page, pageSize = 10, where, ...options }) => {
+    try {
+        const skip = (page - 1) * pageSize;
+        const { count, rows } = await db.Board.findAndCountAll({
+            where: where,
+            offset: skip,
+            limit: pageSize,
+            ...options,
+        });
+
+        return {
+            meta: {
+                page,
+                pageSize,
+                total: count,
+            },
+            data: rows,
+        };
+    } catch (error) {
+        throw error;
+    }
+};
+
 const getDetail = async (boardId) => {
     try {
-        const data = await db.Board.findOne({ id: boardId });
+        const data = await db.Board.findOne({
+            where: { id: boardId },
+            include: {
+                model: db.Column,
+                as: 'columns',
+                attributes: { exclude: ['position'] },
+                include: { model: db.Card, as: 'cards', attributes: { exclude: ['position'] } },
+            },
+            order: [
+                [{ model: db.Column, as: 'columns' }, 'position', 'ASC'],
+                [{ model: db.Column, as: 'columns' }, { model: db.Card, as: 'cards' }, 'position', 'ASC'],
+            ],
+        });
 
-        return data;
+        const boardData = cloneDeep(data.toJSON());
+        boardData.columnOrderIds = data.columns.map((col) => col.id);
+
+        boardData.columns.forEach((col) => {
+            col.cardOrderIds = col.cards.map((card) => card.id);
+        });
+
+        return boardData;
     } catch (error) {
         throw error;
     }
@@ -58,6 +101,7 @@ const destroy = async (boardId) => {
 };
 
 export default {
+    get,
     getDetail,
     store,
     update,

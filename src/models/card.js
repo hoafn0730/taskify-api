@@ -16,8 +16,9 @@ module.exports = (sequelize, DataTypes) => {
             boardId: DataTypes.INTEGER,
             columnId: DataTypes.INTEGER,
             title: DataTypes.STRING,
-            description: DataTypes.STRING,
+            description: DataTypes.TEXT,
             image: DataTypes.STRING,
+            position: DataTypes.INTEGER,
         },
         {
             sequelize,
