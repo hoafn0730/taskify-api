@@ -1,4 +1,6 @@
+import { v4 as uuidv4 } from 'uuid';
 import db from '~/models';
+import { slugify } from '~/utils/formatters';
 
 const getDetail = async (columnId) => {
     try {
@@ -13,8 +15,12 @@ const getDetail = async (columnId) => {
 const store = async (data) => {
     try {
         const [column, created] = await db.Column.findOrCreate({
-            where: { ...data },
+            where: { ...data, uuid: uuidv4(), slug: slugify(data.title) },
         });
+
+        // Update board
+        const board = await db.Board.findOne({ where: { id: data.boardId } });
+        board.update({ columnOrderIds: [...board.columnOrderIds, column.uuid] });
 
         if (!created) {
             return { message: 'Instance was exist!' };
@@ -56,23 +62,9 @@ const destroy = async (columnId) => {
     }
 };
 
-const moveColumn = async (data) => {
-    try {
-        const prevColumn = await getDetail(data.prevColumnId);
-        const nextColumn = await getDetail(data.nextColumnId);
-        update(data.prevColumnId, { position: nextColumn.position });
-        update(data.nextColumnId, { position: prevColumn.position });
-
-        return { message: 'Successfully' };
-    } catch (error) {
-        throw error;
-    }
-};
-
 export default {
     getDetail,
     store,
     update,
     destroy,
-    moveColumn,
 };

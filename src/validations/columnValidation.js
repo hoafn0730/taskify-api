@@ -46,24 +46,8 @@ const destroy = async (req, res, next) => {
     }
 };
 
-const moveColumn = async (req, res, next) => {
-    const correctCondition = Joi.object({
-        prevColumnId: Joi.number().required(),
-        nextColumnId: Joi.number().required(),
-    });
-
-    try {
-        await correctCondition.validateAsync(req.body, { abortEarly: false });
-
-        next();
-    } catch (error) {
-        next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message));
-    }
-};
-
 export const columnValidation = {
     store,
     update,
     destroy,
-    moveColumn,
 };

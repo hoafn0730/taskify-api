@@ -18,6 +18,11 @@ module.exports = (sequelize, DataTypes) => {
             description: DataTypes.STRING,
             type: DataTypes.STRING,
             slug: DataTypes.STRING,
+            columnOrderIds: {
+                type: DataTypes.JSON,
+                allowNull: false,
+                defaultValue: [],
+            },
         },
         {
             sequelize,

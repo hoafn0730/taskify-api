@@ -47,14 +47,4 @@ const destroy = async (req, res, next) => {
     }
 };
 
-const moveColumn = async (req, res, next) => {
-    try {
-        const resData = await columnService.moveColumn(req.body);
-
-        res.status(StatusCodes.OK).json(resData);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export default { getDetail, store, update, destroy, moveColumn };
+export default { getDetail, store, update, destroy };

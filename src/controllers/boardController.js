@@ -59,4 +59,13 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export default { get, getDetail, store, update, destroy };
+const moveCardToDifferentColumn = async (req, res, next) => {
+    try {
+        const result = await boardService.moveCardToDifferentColumn(req.body);
+
+        res.status(StatusCodes.OK).json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+export default { get, getDetail, store, update, destroy, moveCardToDifferentColumn };

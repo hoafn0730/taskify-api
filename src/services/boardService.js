@@ -1,6 +1,7 @@
-import { cloneDeep } from 'lodash';
 import db from '~/models';
 import { slugify } from '~/utils/formatters';
+import columnService from './columnService';
+import cardService from './cardService';
 
 const get = async ({ page, pageSize = 10, where, ...options }) => {
     try {
@@ -32,23 +33,11 @@ const getDetail = async (boardId) => {
             include: {
                 model: db.Column,
                 as: 'columns',
-                attributes: { exclude: ['position'] },
-                include: { model: db.Card, as: 'cards', attributes: { exclude: ['position'] } },
+                include: { model: db.Card, as: 'cards' },
             },
-            order: [
-                [{ model: db.Column, as: 'columns' }, 'position', 'ASC'],
-                [{ model: db.Column, as: 'columns' }, { model: db.Card, as: 'cards' }, 'position', 'ASC'],
-            ],
         });
 
-        const boardData = cloneDeep(data.toJSON());
-        boardData.columnOrderIds = data.columns.map((col) => col.id);
-
-        boardData.columns.forEach((col) => {
-            col.cardOrderIds = col.cards.map((card) => card.id);
-        });
-
-        return boardData;
+        return data;
     } catch (error) {
         throw error;
     }
@@ -100,10 +89,29 @@ const destroy = async (boardId) => {
     }
 };
 
+const moveCardToDifferentColumn = async (data) => {
+    // eslint-disable-next-line no-useless-catch
+    try {
+        // Cap nhat mang cardOrderIds trong column bau dau
+        await columnService.update(data.prevColumnId, { cardOrderIds: data.prevCardOrderIds });
+
+        // Cap nhat mang cardOrderIds trong column moi
+        await columnService.update(data.nextColumnId, { cardOrderIds: data.nextCardOrderIds });
+
+        // Cap nhat truong columnId moi
+        await cardService.update(data.currentCardId, { columnId: data.nextColumnId });
+
+        return { message: 'Successfully' };
+    } catch (error) {
+        throw error;
+    }
+};
+
 export default {
     get,
     getDetail,
     store,
     update,
     destroy,
+    moveCardToDifferentColumn,
 };

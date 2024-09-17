@@ -48,8 +48,29 @@ const destroy = async (req, res, next) => {
     }
 };
 
+const moveCardToDifferentColumn = async (req, res, next) => {
+    const correctCondition = Joi.object({
+        currentCardId: Joi.number().required().strict(),
+
+        prevColumnId: Joi.number().required().strict(),
+        prevCardOrderIds: Joi.array().required().items(Joi.string()).default([]),
+
+        nextColumnId: Joi.number().required().strict(),
+        nextCardOrderIds: Joi.array().required().items(Joi.string()).default([]),
+    });
+
+    try {
+        await correctCondition.validateAsync(req.body, { abortEarly: false });
+
+        next();
+    } catch (error) {
+        next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message));
+    }
+};
+
 export const boardValidation = {
     store,
     update,
     destroy,
+    moveCardToDifferentColumn,
 };

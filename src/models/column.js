@@ -16,7 +16,13 @@ module.exports = (sequelize, DataTypes) => {
         {
             boardId: DataTypes.INTEGER,
             title: DataTypes.STRING,
-            position: DataTypes.INTEGER,
+            slug: DataTypes.STRING,
+            uuid: DataTypes.STRING,
+            cardOrderIds: {
+                type: DataTypes.JSON,
+                allowNull: false,
+                defaultValue: [],
+            },
         },
         {
             sequelize,
