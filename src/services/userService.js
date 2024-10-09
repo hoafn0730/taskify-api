@@ -14,7 +14,7 @@ const getDetail = async (userId) => {
 const store = async (data) => {
     try {
         const [user, created] = await db.User.findOrCreate({
-            where: { ...data, slug: slugify(data.title) },
+            where: { ...data },
         });
 
         if (!created) {

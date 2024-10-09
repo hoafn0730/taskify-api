@@ -9,6 +9,8 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            this.belongsTo(models.Column, { foreignKey: 'columnId', as: 'column' });
+            this.hasMany(models.Checklist, { foreignKey: 'cardId', as: 'checklists' });
         }
     }
     Card.init(
@@ -20,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
             image: DataTypes.STRING,
             slug: DataTypes.STRING,
             uuid: DataTypes.STRING,
+            archived: { type: DataTypes.BOOLEAN, defaultValue: false },
         },
         {
             sequelize,

@@ -56,7 +56,12 @@ const destroy = async (columnId) => {
                 id: columnId,
             },
         });
-        return column;
+
+        if (column) {
+            return { message: 'Successfully!' };
+        }
+
+        return { message: 'Error' };
     } catch (error) {
         throw error;
     }

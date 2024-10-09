@@ -2,29 +2,17 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Boards', {
+        await queryInterface.createTable('Workspaces', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER,
             },
-            workspaceId: {
-                type: Sequelize.INTEGER,
-            },
             title: {
                 type: Sequelize.STRING,
             },
-            description: {
-                type: Sequelize.STRING,
-            },
             type: {
-                type: Sequelize.STRING,
-            },
-            slug: {
-                type: Sequelize.STRING,
-            },
-            image: {
                 type: Sequelize.STRING,
             },
             createdAt: {
@@ -38,6 +26,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Boards');
+        await queryInterface.dropTable('Workspaces');
     },
 };

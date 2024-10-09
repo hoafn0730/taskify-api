@@ -7,7 +7,7 @@ const getDetail = async (req, res, next) => {
         const userId = req.params.id;
         const users = await userService.getDetail(userId);
 
-        res.status(StatusCodes.OK).json({ data: users });
+        res.status(StatusCodes.OK).json({ data: users, user: req.user });
     } catch (error) {
         next(error);
     }

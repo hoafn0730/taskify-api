@@ -2,9 +2,19 @@ import { v4 as uuidv4 } from 'uuid';
 import db from '~/models';
 import { slugify } from '~/utils/formatters';
 
-const getDetail = async (cardId) => {
+const getDetailBySlug = async (slug, archived) => {
     try {
-        const data = await db.Card.findOne({ where: { id: cardId } });
+        const data = await db.Card.findOne({
+            where: { slug: slug, archived: !!archived },
+            include: [
+                { model: db.Column, as: 'column' },
+                {
+                    model: db.Checklist,
+                    as: 'checklists',
+                    include: [{ model: db.CheckItem, as: 'checkItems' }],
+                },
+            ],
+        });
 
         return data;
     } catch (error) {
@@ -63,7 +73,7 @@ const destroy = async (cardId) => {
 };
 
 export default {
-    getDetail,
+    getDetailBySlug,
     store,
     update,
     destroy,

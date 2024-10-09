@@ -4,11 +4,9 @@ import ApiError from '~/utils/ApiError';
 
 const store = async (req, res, next) => {
     const correctCondition = Joi.object({
-        uid: Joi.string().required().strict(),
-        username: Joi.string().required().min(3).max(50).trim().strict(),
-        email: Joi.string().required().min(3).max(255).trim().strict(),
-        fullName: Joi.string().required().min(3).max(255).trim().strict(),
-        avatar: Joi.string().required().min(3).max(255).trim().strict(),
+        boardId: Joi.number().required(),
+        cardId: Joi.number().required(),
+        title: Joi.string().required().min(3).max(50).trim().strict(),
     });
 
     try {
@@ -22,9 +20,27 @@ const store = async (req, res, next) => {
 
 const update = async (req, res, next) => {
     const correctCondition = Joi.object({
+        boardId: Joi.number(),
+        columnId: Joi.number(),
         title: Joi.string().min(3).max(50).trim().strict(),
-        description: Joi.string().min(3).max(255).trim().strict(),
-        type: Joi.string().valid('public', 'private'),
+        description: Joi.string().min(3).trim().strict(),
+        image: Joi.string().min(3).max(255).trim().strict(),
+    });
+
+    try {
+        await correctCondition.validateAsync(req.body, { abortEarly: false, allowUnknown: true });
+
+        next();
+    } catch (error) {
+        next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message));
+    }
+};
+
+const updateCheckItem = async (req, res, next) => {
+    const correctCondition = Joi.object({
+        checklistId: Joi.number(),
+        title: Joi.string().min(3).max(50).trim().strict(),
+        status: Joi.string().min(3).max(255).trim().strict(),
     });
 
     try {
@@ -50,8 +66,9 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export const userValidation = {
+export default {
     store,
     update,
     destroy,
+    updateCheckItem,
 };

@@ -26,6 +26,17 @@ const getDetail = async (req, res, next) => {
     }
 };
 
+const getBoardBySlug = async (req, res, next) => {
+    try {
+        const slug = req.params.slug;
+        const boards = await boardService.getBoardBySlug(slug);
+
+        res.status(StatusCodes.OK).json({ data: boards });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const store = async (req, res, next) => {
     try {
         const boards = await boardService.store(req.body);
@@ -68,4 +79,4 @@ const moveCardToDifferentColumn = async (req, res, next) => {
         next(error);
     }
 };
-export default { get, getDetail, store, update, destroy, moveCardToDifferentColumn };
+export default { get, getDetail, getBoardBySlug, store, update, destroy, moveCardToDifferentColumn };

@@ -2,10 +2,10 @@ import { StatusCodes } from 'http-status-codes';
 
 import cardService from '~/services/cardService';
 
-const getDetail = async (req, res, next) => {
+const getDetailBySlug = async (req, res, next) => {
     try {
-        const cardId = req.params.id;
-        const cards = await cardService.getDetail(cardId);
+        const slug = req.params.slug;
+        const cards = await cardService.getDetailBySlug(slug);
 
         res.status(StatusCodes.OK).json({ data: cards });
     } catch (error) {
@@ -47,4 +47,4 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export default { getDetail, store, update, destroy };
+export default { getDetailBySlug, store, update, destroy };

@@ -3,7 +3,7 @@ import { slugify } from '~/utils/formatters';
 import columnService from './columnService';
 import cardService from './cardService';
 
-const get = async ({ page, pageSize = 10, where, ...options }) => {
+const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
     try {
         const skip = (page - 1) * pageSize;
         const { count, rows } = await db.Board.findAndCountAll({
@@ -30,6 +30,23 @@ const getDetail = async (boardId) => {
     try {
         const data = await db.Board.findOne({
             where: { id: boardId },
+            include: {
+                model: db.Column,
+                as: 'columns',
+                include: { model: db.Card, as: 'cards' },
+            },
+        });
+
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+const getBoardBySlug = async (slug) => {
+    try {
+        const data = await db.Board.findOne({
+            where: { slug: slug },
             include: {
                 model: db.Column,
                 as: 'columns',
@@ -110,6 +127,7 @@ const moveCardToDifferentColumn = async (data) => {
 export default {
     get,
     getDetail,
+    getBoardBySlug,
     store,
     update,
     destroy,
