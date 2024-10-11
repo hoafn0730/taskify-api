@@ -8,11 +8,21 @@ const getDetailBySlug = async (slug, archived) => {
             where: { slug: slug, archived: !!archived },
             include: [
                 { model: db.Column, as: 'column' },
+                { model: db.Attachment, as: 'attachments' },
+                { model: db.Attachment, as: 'cover' },
                 {
                     model: db.Checklist,
                     as: 'checklists',
-                    include: [{ model: db.CheckItem, as: 'checkItems' }],
+                    include: [
+                        {
+                            model: db.CheckItem,
+                            as: 'checkItems',
+                        },
+                    ],
                 },
+            ],
+            order: [
+                [{ model: db.Checklist, as: 'checklists' }, { model: db.CheckItem, as: 'checkItems' }, 'id', 'ASC'],
             ],
         });
 
@@ -44,8 +54,8 @@ const store = async (data) => {
 
 const update = async (cardId, data) => {
     try {
-        const card = await db.Card.update(
-            { ...data },
+        const updated = await db.Card.update(
+            { ...data, slug: slugify(data.title) },
             {
                 where: {
                     id: cardId,
@@ -53,7 +63,13 @@ const update = async (cardId, data) => {
             },
         );
 
-        return card;
+        if (updated[0]) {
+            const card = await db.Card.findOne({ where: { id: cardId } });
+
+            return card;
+        } else {
+            return { message: 'error' };
+        }
     } catch (error) {
         throw error;
     }

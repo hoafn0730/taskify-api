@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             this.belongsTo(models.Column, { foreignKey: 'columnId', as: 'column' });
             this.hasMany(models.Checklist, { foreignKey: 'cardId', as: 'checklists' });
+            this.hasMany(models.Attachment, { foreignKey: 'cardId', as: 'attachments' });
+            this.belongsTo(models.Attachment, { foreignKey: 'image', as: 'cover' });
         }
     }
     Card.init(

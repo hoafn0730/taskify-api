@@ -61,6 +61,16 @@ const destroy = async (checklistId) => {
     }
 };
 
+const storeCheckItem = async (data) => {
+    try {
+        const checkItem = await db.CheckItem.create(data);
+
+        return { data: checkItem };
+    } catch (error) {
+        throw error;
+    }
+};
+
 const updateCheckItem = async (checklistId, checkItemId, data) => {
     try {
         const checkItem = await db.CheckItem.update(
@@ -79,10 +89,31 @@ const updateCheckItem = async (checklistId, checkItemId, data) => {
     }
 };
 
+const destroyCheckItem = async (checklistId, checkItemId) => {
+    try {
+        const checkItem = await db.CheckItem.destroy({
+            where: {
+                id: checkItemId,
+                checklistId: checklistId,
+            },
+        });
+
+        if (checkItem) {
+            return { message: 'Successfully!' };
+        }
+
+        return { message: 'Error' };
+    } catch (error) {
+        throw error;
+    }
+};
+
 export default {
     getDetail,
     store,
     update,
     destroy,
+    storeCheckItem,
     updateCheckItem,
+    destroyCheckItem,
 };

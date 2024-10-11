@@ -6,6 +6,7 @@ import columnRouter from './columnRouter';
 import cardRouter from './cardRouter';
 import userRouter from './userRouter';
 import checklistRouter from './checklistRouter';
+import attachmentRouter from './attachmentRouter';
 import { authMiddleware } from '~/middlewares/authMiddleware';
 
 const router = express.Router();
@@ -21,5 +22,6 @@ router.use('/columns', columnRouter);
 router.use('/cards', cardRouter);
 router.use('/users', userRouter);
 router.use('/checklists', checklistRouter);
+router.use('/attachments', attachmentRouter);
 
 export default router;

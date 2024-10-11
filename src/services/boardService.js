@@ -47,11 +47,17 @@ const getBoardBySlug = async (slug) => {
     try {
         const data = await db.Board.findOne({
             where: { slug: slug },
-            include: {
-                model: db.Column,
-                as: 'columns',
-                include: { model: db.Card, as: 'cards' },
-            },
+            include: [
+                {
+                    model: db.Column,
+                    as: 'columns',
+                    include: { model: db.Card, as: 'cards', include: { model: db.Attachment, as: 'cover' } },
+                },
+                {
+                    model: db.Member,
+                    as: 'members',
+                },
+            ],
         });
 
         return data;
@@ -115,8 +121,10 @@ const moveCardToDifferentColumn = async (data) => {
         // Cap nhat mang cardOrderIds trong column moi
         await columnService.update(data.nextColumnId, { cardOrderIds: data.nextCardOrderIds });
 
+        const card = await db.Card.findOne({ where: { id: data.currentCardId } });
+
         // Cap nhat truong columnId moi
-        await cardService.update(data.currentCardId, { columnId: data.nextColumnId });
+        await cardService.update(data.currentCardId, { columnId: data.nextColumnId, title: card.title });
 
         return { message: 'Successfully' };
     } catch (error) {

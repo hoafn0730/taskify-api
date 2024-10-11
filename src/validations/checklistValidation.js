@@ -36,15 +36,13 @@ const update = async (req, res, next) => {
     }
 };
 
-const updateCheckItem = async (req, res, next) => {
+const destroy = async (req, res, next) => {
     const correctCondition = Joi.object({
-        checklistId: Joi.number(),
-        title: Joi.string().min(3).max(50).trim().strict(),
-        status: Joi.string().min(3).max(255).trim().strict(),
+        id: Joi.number().required(),
     });
 
     try {
-        await correctCondition.validateAsync(req.body, { abortEarly: false, allowUnknown: true });
+        await correctCondition.validateAsync(req.params);
 
         next();
     } catch (error) {
@@ -52,9 +50,49 @@ const updateCheckItem = async (req, res, next) => {
     }
 };
 
-const destroy = async (req, res, next) => {
+const storeCheckItem = async (req, res, next) => {
+    const correctCondition = Joi.object({
+        title: Joi.string().min(3).max(50).trim().strict(),
+        status: Joi.string().min(3).max(255).trim().strict(),
+    });
+    const correctParamsCondition = Joi.object({
+        id: Joi.number().required(),
+    });
+
+    try {
+        await correctCondition.validateAsync(req.body, { abortEarly: false });
+        await correctParamsCondition.validateAsync(req.params, { abortEarly: false });
+
+        next();
+    } catch (error) {
+        next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message));
+    }
+};
+
+const updateCheckItem = async (req, res, next) => {
+    const correctCondition = Joi.object({
+        title: Joi.string().min(3).max(50).trim().strict(),
+        status: Joi.string().min(3).max(255).trim().strict(),
+    });
+    const correctParamsCondition = Joi.object({
+        id: Joi.number().required(),
+        checkItemId: Joi.number().required(),
+    });
+
+    try {
+        await correctCondition.validateAsync(req.body, { abortEarly: false, allowUnknown: true });
+        await correctParamsCondition.validateAsync(req.params, { abortEarly: false });
+
+        next();
+    } catch (error) {
+        next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message));
+    }
+};
+
+const destroyCheckItem = async (req, res, next) => {
     const correctCondition = Joi.object({
         id: Joi.number().required(),
+        checkItemId: Joi.number().required(),
     });
 
     try {
@@ -70,5 +108,7 @@ export default {
     store,
     update,
     destroy,
+    storeCheckItem,
     updateCheckItem,
+    destroyCheckItem,
 };

@@ -1,5 +1,4 @@
 import { StatusCodes } from 'http-status-codes';
-
 import checklistService from '~/services/checklistService';
 
 const getDetailBySlug = async (req, res, next) => {
@@ -47,6 +46,18 @@ const destroy = async (req, res, next) => {
     }
 };
 
+const storeCheckItem = async (req, res, next) => {
+    try {
+        const checklistId = req.params.id;
+
+        const updatedChecklist = await checklistService.storeCheckItem({ ...req.body, checklistId });
+
+        res.status(StatusCodes.OK).json(updatedChecklist);
+    } catch (error) {
+        next(error);
+    }
+};
+
 const updateCheckItem = async (req, res, next) => {
     try {
         const checklistId = req.params.id;
@@ -60,4 +71,17 @@ const updateCheckItem = async (req, res, next) => {
     }
 };
 
-export default { getDetailBySlug, store, update, destroy, updateCheckItem };
+const destroyCheckItem = async (req, res, next) => {
+    try {
+        const checklistId = req.params.id;
+        const checkItemId = req.params.checkItemId;
+
+        const updatedChecklist = await checklistService.destroyCheckItem(checklistId, checkItemId);
+
+        res.status(StatusCodes.OK).json(updatedChecklist);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export default { getDetailBySlug, store, update, destroy, storeCheckItem, updateCheckItem, destroyCheckItem };
