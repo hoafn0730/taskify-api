@@ -2,6 +2,19 @@ import { StatusCodes } from 'http-status-codes';
 
 import cardService from '~/services/cardService';
 
+const get = async (req, res, next) => {
+    try {
+        const page = req.query.page;
+        const pageSize = req.query.pageSize;
+        const query = req.query.q;
+        const cards = await cardService.get({ page, pageSize, query });
+
+        res.status(StatusCodes.OK).json({ data: cards });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const getDetailBySlug = async (req, res, next) => {
     try {
         const slug = req.params.slug;
@@ -47,4 +60,4 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export default { getDetailBySlug, store, update, destroy };
+export default { get, getDetailBySlug, store, update, destroy };

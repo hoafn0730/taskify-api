@@ -49,7 +49,7 @@ const store = async (data) => {
             fileType: result.resource_type,
         });
 
-        if (data.cover) {
+        if (!!data.cover) {
             const card = await db.Card.findOne({ where: { id: data.cardId } });
             db.Card.update(
                 { image: attachment.id },

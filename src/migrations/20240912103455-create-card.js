@@ -24,6 +24,25 @@ module.exports = {
             image: {
                 type: Sequelize.STRING,
             },
+            slug: {
+                type: Sequelize.STRING,
+            },
+            uuid: {
+                type: Sequelize.STRING,
+            },
+            dueDate: {
+                type: Sequelize.DATE,
+            },
+            dueComplete: {
+                type: Sequelize.BOOLEAN,
+            },
+            dueReminder: {
+                type: Sequelize.INTEGER,
+            },
+            archived: {
+                type: Sequelize.BOOLEAN,
+                defaultValue: false,
+            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,

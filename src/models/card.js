@@ -24,6 +24,9 @@ module.exports = (sequelize, DataTypes) => {
             image: DataTypes.STRING,
             slug: DataTypes.STRING,
             uuid: DataTypes.STRING,
+            dueDate: DataTypes.DATE,
+            dueComplete: DataTypes.BOOLEAN,
+            dueReminder: DataTypes.INTEGER,
             archived: { type: DataTypes.BOOLEAN, defaultValue: false },
         },
         {

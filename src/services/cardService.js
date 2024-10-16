@@ -2,6 +2,30 @@ import { v4 as uuidv4 } from 'uuid';
 import db from '~/models';
 import { slugify } from '~/utils/formatters';
 
+const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
+    try {
+        const skip = (page - 1) * pageSize;
+        const { count, rows } = await db.Card.findAndCountAll({
+            where: where,
+            offset: skip,
+            limit: pageSize,
+            include: { model: db.Attachment, as: 'cover' },
+            ...options,
+        });
+
+        return {
+            meta: {
+                page,
+                pageSize,
+                total: count,
+            },
+            data: rows,
+        };
+    } catch (error) {
+        throw error;
+    }
+};
+
 const getDetailBySlug = async (slug, archived) => {
     try {
         const data = await db.Card.findOne({
@@ -88,9 +112,4 @@ const destroy = async (cardId) => {
     }
 };
 
-export default {
-    getDetailBySlug,
-    store,
-    update,
-    destroy,
-};
+export default { get, getDetailBySlug, store, update, destroy };

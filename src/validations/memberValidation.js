@@ -4,9 +4,9 @@ import ApiError from '~/utils/ApiError';
 
 const store = async (req, res, next) => {
     const correctCondition = Joi.object({
-        boardId: Joi.number().required(),
-        columnId: Joi.number().required(),
-        title: Joi.string().required().min(3).max(50).trim().strict(),
+        userId: Joi.number().required(),
+        objectId: Joi.number().required(),
+        objectType: Joi.string().required().min(3).max(255).trim().strict(),
     });
 
     try {
@@ -20,14 +20,7 @@ const store = async (req, res, next) => {
 
 const update = async (req, res, next) => {
     const correctCondition = Joi.object({
-        boardId: Joi.number(),
-        columnId: Joi.number(),
-        title: Joi.string().min(3).max(50).trim().strict(),
-        description: Joi.string().min(3).trim().strict(),
-        image: Joi.string().min(3).max(255).trim().strict(),
-        dueDate: Joi.date().allow(null),
-        dueComplete: Joi.boolean().strict(),
-        dueReminder: Joi.number().strict(),
+        role: Joi.string().valid('user', 'admin', 'owner'),
     });
 
     try {
@@ -53,7 +46,7 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export const cardValidation = {
+export const memberValidation = {
     store,
     update,
     destroy,

@@ -51,11 +51,29 @@ const getBoardBySlug = async (slug) => {
                 {
                     model: db.Column,
                     as: 'columns',
-                    include: { model: db.Card, as: 'cards', include: { model: db.Attachment, as: 'cover' } },
+                    include: {
+                        model: db.Card,
+                        as: 'cards',
+                        include: [
+                            { model: db.Attachment, as: 'cover' },
+                            { model: db.Attachment, as: 'attachments' },
+                            {
+                                model: db.Checklist,
+                                as: 'checklists',
+                                include: [
+                                    {
+                                        model: db.CheckItem,
+                                        as: 'checkItems',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
                 },
                 {
                     model: db.Member,
                     as: 'members',
+                    include: { model: db.User, as: 'user' },
                 },
             ],
         });
