@@ -27,11 +27,15 @@ module.exports = (sequelize, DataTypes) => {
             dueDate: DataTypes.DATE,
             dueComplete: DataTypes.BOOLEAN,
             dueReminder: DataTypes.INTEGER,
-            archived: { type: DataTypes.BOOLEAN, defaultValue: false },
+            archivedAt: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             sequelize,
             modelName: 'Card',
+            paranoid: true,
         },
     );
     return Card;

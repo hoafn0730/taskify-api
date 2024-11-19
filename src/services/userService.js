@@ -1,9 +1,8 @@
 import db from '~/models';
-import { slugify } from '~/utils/formatters';
 
 const getDetail = async (userId) => {
     try {
-        const data = await db.User.findOne({ id: userId });
+        const data = await db.User.findOne({ where: { id: userId } });
 
         return data;
     } catch (error) {

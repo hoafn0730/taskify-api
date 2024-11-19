@@ -39,9 +39,9 @@ module.exports = {
             dueReminder: {
                 type: Sequelize.INTEGER,
             },
-            archived: {
-                type: Sequelize.BOOLEAN,
-                defaultValue: false,
+            archivedAt: {
+                type: Sequelize.DATE,
+                allowNull: true,
             },
             createdAt: {
                 allowNull: false,

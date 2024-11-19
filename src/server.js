@@ -4,25 +4,32 @@ import exitHook from 'async-exit-hook';
 import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 
 import APIs_V1 from './routes/v1';
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware';
 import { corsOptions } from './config/cors';
 import { closeDb, connection } from './config/connectDb';
+
 const hostname = process.env.HOST || 'localhost';
 const port = process.env.PORT || 8017;
 const app = express();
-// const http = require('http').Server(app);
-// const io = require('socket.io')(http);
-//
-// io.on('connection', function (socket) {
-//     console.log('A user connected');
-//
-//     //Whenever someone disconnects this piece of code executed
-//     socket.on('disconnect', function () {
-//         console.log('A user disconnected');
-//     });
-// });
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+    cors: corsOptions,
+});
+
+io.on('connection', (socket) => {
+    console.log('A user connected');
+    // socket.emit('hello', 'world');
+    socket.broadcast.emit('hello', 'world1');
+
+    //Whenever someone disconnects this piece of code executed
+    socket.on('disconnect', function () {
+        console.log('A user disconnected');
+    });
+});
 
 connection();
 app.use(morgan('dev'));
@@ -39,7 +46,7 @@ app.use(
 app.use('/api/v1', APIs_V1);
 app.use(errorHandlingMiddleware);
 
-app.listen(port, () => {
+httpServer.listen(port, async () => {
     // eslint-disable-next-line no-console
     console.log(`I am running at http://${hostname}:${port}`);
 });

@@ -16,7 +16,7 @@ const authMiddleware = async (req, res, next) => {
             const token = cookies?.accessToken || tokenFromHeader;
             // call sso to verify token
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            const resData = await axios.post('http://localhost:8080/api/v1/auth/verify-services');
+            const resData = await axios.post(process.env.SSO_BACKEND_URL + '/api/v1/auth/verify-services');
 
             if (resData && resData.data.statusCode === 200) {
                 req.user = resData.data.data;

@@ -18,7 +18,8 @@ const get = async (req, res, next) => {
 const getDetailBySlug = async (req, res, next) => {
     try {
         const slug = req.params.slug;
-        const cards = await cardService.getDetailBySlug(slug);
+        const archivedAt = req.params.archivedAt;
+        const cards = await cardService.getDetailBySlug(slug, archivedAt);
 
         res.status(StatusCodes.OK).json({ data: cards });
     } catch (error) {

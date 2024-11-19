@@ -9,7 +9,20 @@ const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
             where: where,
             offset: skip,
             limit: pageSize,
-            include: { model: db.Attachment, as: 'cover' },
+            include: [
+                { model: db.Attachment, as: 'cover' },
+                { model: db.Attachment, as: 'attachments' },
+                {
+                    model: db.Checklist,
+                    as: 'checklists',
+                    include: [
+                        {
+                            model: db.CheckItem,
+                            as: 'checkItems',
+                        },
+                    ],
+                },
+            ],
             ...options,
         });
 
@@ -26,10 +39,10 @@ const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
     }
 };
 
-const getDetailBySlug = async (slug, archived) => {
+const getDetailBySlug = async (slug, archivedAt) => {
     try {
         const data = await db.Card.findOne({
-            where: { slug: slug, archived: !!archived },
+            where: { slug: slug, archivedAt: archivedAt || null },
             include: [
                 { model: db.Column, as: 'column' },
                 { model: db.Attachment, as: 'attachments' },

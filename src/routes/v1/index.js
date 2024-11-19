@@ -8,7 +8,6 @@ import userRouter from './userRouter';
 import checklistRouter from './checklistRouter';
 import attachmentRouter from './attachmentRouter';
 import memberRouter from './memberRouter';
-import { authMiddleware } from '~/middlewares/authMiddleware';
 
 const router = express.Router();
 
