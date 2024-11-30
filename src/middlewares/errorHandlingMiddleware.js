@@ -7,7 +7,7 @@ export const errorHandlingMiddleware = (err, req, res, next) => {
     const responseError = {
         statusCode: err.statusCode,
         message: err.message || StatusCodes[err.statusCode], // Nếu lỗi mà không có message thì lấy ReasonPhrases chuẩn theo mã Status Code
-        // stack: err.stack,
+        stack: err.stack,
     };
 
     // Chỉ khi môi trường là DEV thì mới trả về Stack Trace để debug dễ dàng hơn, còn không thì xóa đi.

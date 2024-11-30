@@ -9,6 +9,7 @@ const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
             where: where,
             offset: skip,
             limit: pageSize,
+            distinct: true,
             include: [
                 { model: db.Attachment, as: 'cover' },
                 { model: db.Attachment, as: 'attachments' },
@@ -39,7 +40,7 @@ const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
     }
 };
 
-const getDetailBySlug = async (slug, archivedAt) => {
+const getOneBySlug = async (slug, archivedAt) => {
     try {
         const data = await db.Card.findOne({
             where: { slug: slug, archivedAt: archivedAt || null },
@@ -125,4 +126,4 @@ const destroy = async (cardId) => {
     }
 };
 
-export default { get, getDetailBySlug, store, update, destroy };
+export default { get, getOneBySlug, store, update, destroy };

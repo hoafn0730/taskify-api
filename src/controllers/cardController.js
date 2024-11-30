@@ -1,5 +1,4 @@
 import { StatusCodes } from 'http-status-codes';
-
 import cardService from '~/services/cardService';
 
 const get = async (req, res, next) => {
@@ -9,19 +8,28 @@ const get = async (req, res, next) => {
         const query = req.query.q;
         const cards = await cardService.get({ page, pageSize, query });
 
-        res.status(StatusCodes.OK).json({ data: cards });
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            meta: cards.meta,
+            data: cards.data,
+        });
     } catch (error) {
         next(error);
     }
 };
 
-const getDetailBySlug = async (req, res, next) => {
+const getOneBySlug = async (req, res, next) => {
     try {
         const slug = req.params.slug;
         const archivedAt = req.params.archivedAt;
-        const cards = await cardService.getDetailBySlug(slug, archivedAt);
+        const cards = await cardService.getOneBySlug(slug, archivedAt);
 
-        res.status(StatusCodes.OK).json({ data: cards });
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: cards,
+        });
     } catch (error) {
         next(error);
     }
@@ -31,7 +39,11 @@ const store = async (req, res, next) => {
     try {
         const card = await cardService.store(req.body);
 
-        res.status(StatusCodes.CREATED).json(card);
+        res.status(StatusCodes.CREATED).json({
+            statusCode: StatusCodes.CREATED,
+            message: StatusCodes[StatusCodes.CREATED],
+            data: card,
+        });
     } catch (error) {
         next(error);
     }
@@ -43,7 +55,11 @@ const update = async (req, res, next) => {
 
         const updatedCard = await cardService.update(cardId, req.body);
 
-        res.status(StatusCodes.OK).json(updatedCard);
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: updatedCard,
+        });
     } catch (error) {
         next(error);
     }
@@ -55,10 +71,14 @@ const destroy = async (req, res, next) => {
 
         const updatedCard = await cardService.destroy(cardId, req.body);
 
-        res.status(StatusCodes.OK).json(updatedCard);
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: updatedCard,
+        });
     } catch (error) {
         next(error);
     }
 };
 
-export default { get, getDetailBySlug, store, update, destroy };
+export default { get, getOneBySlug, store, update, destroy };

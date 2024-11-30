@@ -1,14 +1,10 @@
-import db from '~/models';
 import cloudinary from 'cloudinary';
-
-const cloud_name = 'djcqm9suu';
-const api_key = '449557284671453';
-const api_secret = 'dhpBRLXN5r2hEr912m3d7sTRSBg';
+import db from '~/models';
 
 cloudinary.v2.config({
-    cloud_name: cloud_name,
-    api_key: api_key,
-    api_secret: api_secret,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const opts = {
@@ -17,7 +13,7 @@ const opts = {
     resource_type: 'auto',
 };
 
-const getDetail = async (attachmentId) => {
+const getOne = async (attachmentId) => {
     try {
         const data = await db.Attachment.findOne({ where: { id: attachmentId } });
 
@@ -103,7 +99,7 @@ const destroy = async (attachmentId) => {
 };
 
 export default {
-    getDetail,
+    getOne,
     store,
     update,
     destroy,

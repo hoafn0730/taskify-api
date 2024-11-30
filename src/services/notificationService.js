@@ -1,8 +1,8 @@
 import db from '~/models';
 
-const getOne = async (userId) => {
+const getOne = async (notificationId) => {
     try {
-        const data = await db.User.findOne({ where: { id: userId } });
+        const data = await db.Notification.findOne({ where: { id: notificationId } });
 
         return data;
     } catch (error) {
@@ -12,7 +12,7 @@ const getOne = async (userId) => {
 
 const store = async (data) => {
     try {
-        const [user, created] = await db.User.findOrCreate({
+        const [notification, created] = await db.Notification.findOrCreate({
             where: { ...data },
         });
 
@@ -20,37 +20,42 @@ const store = async (data) => {
             return { message: 'Instance was exist!' };
         }
 
-        return { data: user };
+        return { data: notification };
     } catch (error) {
         throw error;
     }
 };
 
-const update = async (userId, data) => {
+const update = async (notificationId, data) => {
     try {
-        const user = await db.User.update(
+        const notification = await db.Notification.update(
             { ...data },
             {
                 where: {
-                    id: userId,
+                    id: notificationId,
                 },
             },
         );
 
-        return user;
+        return notification;
     } catch (error) {
         throw error;
     }
 };
 
-const destroy = async (userId) => {
+const destroy = async (notificationId) => {
     try {
-        const user = await db.User.destroy({
+        const notification = await db.Notification.destroy({
             where: {
-                id: userId,
+                id: notificationId,
             },
         });
-        return user;
+
+        if (notification) {
+            return { message: 'Successfully!' };
+        }
+
+        return { message: 'Error' };
     } catch (error) {
         throw error;
     }

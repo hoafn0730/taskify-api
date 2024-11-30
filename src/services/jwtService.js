@@ -6,6 +6,4 @@ const extractToken = (authorization) => {
     return null;
 };
 
-module.exports = {
-    extractToken,
-};
+export { extractToken };

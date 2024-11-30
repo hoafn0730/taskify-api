@@ -8,6 +8,9 @@ import userRouter from './userRouter';
 import checklistRouter from './checklistRouter';
 import attachmentRouter from './attachmentRouter';
 import memberRouter from './memberRouter';
+import commentRouter from './commentRouter';
+import notificationRouter from './notificationRouter';
+// import { authMiddleware } from '~/middlewares/authMiddleware';
 
 const router = express.Router();
 
@@ -24,5 +27,7 @@ router.use('/users', userRouter);
 router.use('/checklists', checklistRouter);
 router.use('/attachments', attachmentRouter);
 router.use('/members', memberRouter);
+router.use('/comments', commentRouter);
+router.use('/notifications', notificationRouter);
 
 export default router;

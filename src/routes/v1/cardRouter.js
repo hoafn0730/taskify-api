@@ -5,7 +5,7 @@ import { cardValidation } from '~/validations/cardValidation';
 const router = express.Router();
 
 router.get('/', cardController.get);
-router.get('/:slug', cardController.getDetailBySlug);
+router.get('/:slug', cardController.getOneBySlug);
 router.post('/', cardValidation.store, cardController.store);
 router.put('/:id', cardValidation.update, cardController.update);
 router.delete('/:id', cardValidation.destroy, cardController.destroy);

@@ -1,6 +1,6 @@
 import db from '~/models';
 
-const getDetail = async (checklistId) => {
+const getOne = async (checklistId) => {
     try {
         const data = await db.Checklist.findOne({ where: { id: checklistId } });
 
@@ -109,7 +109,7 @@ const destroyCheckItem = async (checklistId, checkItemId) => {
 };
 
 export default {
-    getDetail,
+    getOne,
     store,
     update,
     destroy,

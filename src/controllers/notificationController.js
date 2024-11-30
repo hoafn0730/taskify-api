@@ -1,15 +1,15 @@
 import { StatusCodes } from 'http-status-codes';
-import memberService from '~/services/memberService';
+import notificationService from '~/services/notificationService';
 
 const getOne = async (req, res, next) => {
     try {
-        const memberId = req.params.id;
-        const members = await memberService.getOne(memberId);
+        const notificationId = req.params.id;
+        const notification = await notificationService.getOne(notificationId);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: members,
+            data: notification,
         });
     } catch (error) {
         next(error);
@@ -18,12 +18,16 @@ const getOne = async (req, res, next) => {
 
 const store = async (req, res, next) => {
     try {
-        const members = await memberService.store(req.body);
+        const notification = await notificationService.store(req.body);
+
+        res.io.emit('notification', {
+            message: 'hello',
+        });
 
         res.status(StatusCodes.CREATED).json({
             statusCode: StatusCodes.CREATED,
             message: StatusCodes[StatusCodes.CREATED],
-            data: members,
+            data: notification,
         });
     } catch (error) {
         next(error);
@@ -32,14 +36,14 @@ const store = async (req, res, next) => {
 
 const update = async (req, res, next) => {
     try {
-        const memberId = req.params.id;
+        const notificationId = req.params.id;
 
-        const updatedMember = await memberService.update(memberId, req.body);
+        const updatedNotification = await notificationService.update(notificationId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedMember,
+            data: updatedNotification,
         });
     } catch (error) {
         next(error);
@@ -48,14 +52,14 @@ const update = async (req, res, next) => {
 
 const destroy = async (req, res, next) => {
     try {
-        const memberId = req.params.id;
+        const notificationId = req.params.id;
 
-        const updatedMember = await memberService.destroy(memberId, req.body);
+        const updatedNotification = await notificationService.destroy(notificationId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedMember,
+            data: updatedNotification,
         });
     } catch (error) {
         next(error);

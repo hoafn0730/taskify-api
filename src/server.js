@@ -43,6 +43,10 @@ app.use(
         parameterLimit: 50000,
     }),
 );
+app.use((req, res, next) => {
+    res.io = io;
+    next();
+});
 app.use('/api/v1', APIs_V1);
 app.use(errorHandlingMiddleware);
 

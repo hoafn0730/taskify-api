@@ -1,8 +1,8 @@
 import db from '~/models';
 
-const getDetail = async (userId) => {
+const getOne = async (memberId) => {
     try {
-        const data = await db.User.findOne({ id: userId });
+        const data = await db.Member.findOne({ where: { id: memberId } });
 
         return data;
     } catch (error) {
@@ -12,10 +12,8 @@ const getDetail = async (userId) => {
 
 const store = async (data) => {
     try {
-        const user = await db.User.findOne({ where: { uid: +data.userId } });
-
         const [member, created] = await db.Member.findOrCreate({
-            where: { ...data, userId: user.id },
+            where: { ...data },
         });
 
         if (!created) {
@@ -45,21 +43,21 @@ const update = async (memberId, data) => {
     }
 };
 
-const destroy = async (userId) => {
+const destroy = async (memberId) => {
     try {
-        const user = await db.User.destroy({
+        const member = await db.Member.destroy({
             where: {
-                id: userId,
+                id: memberId,
             },
         });
-        return user;
+        return member;
     } catch (error) {
         throw error;
     }
 };
 
 export default {
-    getDetail,
+    getOne,
     store,
     update,
     destroy,

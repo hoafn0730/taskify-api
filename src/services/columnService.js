@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import db from '~/models';
 import { slugify } from '~/utils/formatters';
 
-const getDetail = async (columnId) => {
+const getOne = async (columnId) => {
     try {
         const data = await db.Column.findOne({ where: { id: columnId } });
 
@@ -68,7 +68,7 @@ const destroy = async (columnId) => {
 };
 
 export default {
-    getDetail,
+    getOne,
     store,
     update,
     destroy,

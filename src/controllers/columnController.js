@@ -1,13 +1,16 @@
 import { StatusCodes } from 'http-status-codes';
-
 import columnService from '~/services/columnService';
 
-const getDetail = async (req, res, next) => {
+const getOne = async (req, res, next) => {
     try {
         const columnId = req.params.id;
-        const columns = await columnService.getDetail(columnId);
+        const columns = await columnService.getOne(columnId);
 
-        res.status(StatusCodes.OK).json({ data: columns });
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: columns,
+        });
     } catch (error) {
         next(error);
     }
@@ -17,7 +20,11 @@ const store = async (req, res, next) => {
     try {
         const column = await columnService.store(req.body);
 
-        res.status(StatusCodes.CREATED).json(column);
+        res.status(StatusCodes.CREATED).json({
+            statusCode: StatusCodes.CREATED,
+            message: StatusCodes[StatusCodes.CREATED],
+            data: column,
+        });
     } catch (error) {
         next(error);
     }
@@ -29,7 +36,11 @@ const update = async (req, res, next) => {
 
         const updatedColumn = await columnService.update(columnId, req.body);
 
-        res.status(StatusCodes.OK).json(updatedColumn);
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: updatedColumn,
+        });
     } catch (error) {
         next(error);
     }
@@ -41,10 +52,14 @@ const destroy = async (req, res, next) => {
 
         const updatedColumn = await columnService.destroy(columnId, req.body);
 
-        res.status(StatusCodes.OK).json(updatedColumn);
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: updatedColumn,
+        });
     } catch (error) {
         next(error);
     }
 };
 
-export default { getDetail, store, update, destroy };
+export default { getOne, store, update, destroy };

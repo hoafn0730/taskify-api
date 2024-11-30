@@ -1,13 +1,16 @@
 import { StatusCodes } from 'http-status-codes';
-
 import userService from '~/services/userService';
 
-const getDetail = async (req, res, next) => {
+const getOne = async (req, res, next) => {
     try {
         const userId = req.params.id;
-        const users = await userService.getDetail(userId);
+        const users = await userService.getOne(userId);
 
-        res.status(StatusCodes.OK).json({ data: users, user: req.user });
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: users,
+        });
     } catch (error) {
         next(error);
     }
@@ -16,7 +19,12 @@ const getDetail = async (req, res, next) => {
 const store = async (req, res, next) => {
     try {
         const users = await userService.store(req.body);
-        res.status(StatusCodes.CREATED).json(users);
+
+        res.status(StatusCodes.CREATED).json({
+            statusCode: StatusCodes.CREATED,
+            message: StatusCodes[StatusCodes.CREATED],
+            data: users,
+        });
     } catch (error) {
         next(error);
     }
@@ -28,7 +36,11 @@ const update = async (req, res, next) => {
 
         const updatedUser = await userService.update(userId, req.body);
 
-        res.status(StatusCodes.OK).json(updatedUser);
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: updatedUser,
+        });
     } catch (error) {
         next(error);
     }
@@ -40,10 +52,14 @@ const destroy = async (req, res, next) => {
 
         const updatedUser = await userService.destroy(userId, req.body);
 
-        res.status(StatusCodes.OK).json(updatedUser);
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: updatedUser,
+        });
     } catch (error) {
         next(error);
     }
 };
 
-export default { getDetail, store, update, destroy };
+export default { getOne, store, update, destroy };

@@ -10,6 +10,7 @@ const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
             where: where,
             offset: skip,
             limit: pageSize,
+            distinct: true,
             ...options,
         });
 
@@ -26,7 +27,7 @@ const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
     }
 };
 
-const getDetail = async (boardId) => {
+const getOne = async (boardId) => {
     try {
         const data = await db.Board.findOne({
             where: { id: boardId },
@@ -152,7 +153,7 @@ const moveCardToDifferentColumn = async (data) => {
 
 export default {
     get,
-    getDetail,
+    getOne,
     getBoardBySlug,
     store,
     update,
