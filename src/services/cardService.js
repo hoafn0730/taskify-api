@@ -49,6 +49,17 @@ const getOneBySlug = async (slug, archivedAt) => {
                 { model: db.Attachment, as: 'attachments' },
                 { model: db.Attachment, as: 'cover' },
                 {
+                    model: db.Comment,
+                    as: 'comments',
+                    where: { commentableType: 'card' },
+                    include: [
+                        {
+                            model: db.User,
+                            as: 'user',
+                        },
+                    ],
+                },
+                {
                     model: db.Checklist,
                     as: 'checklists',
                     include: [

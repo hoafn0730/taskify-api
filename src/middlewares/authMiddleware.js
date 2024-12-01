@@ -18,7 +18,7 @@ const authMiddleware = async (req, res, next) => {
 
             if (resData && resData.data.statusCode === 200) {
                 const { id, banner, bio, ...userData } = resData.data.data;
-                const user = await db.User.findOrCreate({
+                const [user] = await db.User.findOrCreate({
                     where: { uid: id },
                     defaults: {
                         ...userData,

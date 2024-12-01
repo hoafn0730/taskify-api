@@ -4,8 +4,10 @@ import ApiError from '~/utils/ApiError';
 
 const store = async (req, res, next) => {
     const correctCondition = Joi.object({
-        boardId: Joi.number().required(),
-        title: Joi.string().required().min(3).max(50).trim().strict(),
+        userId: Joi.number().optional(),
+        commentableId: Joi.number().required(),
+        commentableType: Joi.string().required().min(3).max(50).trim().strict(),
+        comment: Joi.string().required().min(3).max(50).trim().strict(),
     });
 
     try {

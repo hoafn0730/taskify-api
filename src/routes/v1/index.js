@@ -10,7 +10,7 @@ import attachmentRouter from './attachmentRouter';
 import memberRouter from './memberRouter';
 import commentRouter from './commentRouter';
 import notificationRouter from './notificationRouter';
-// import { authMiddleware } from '~/middlewares/authMiddleware';
+import { authMiddleware } from '~/middlewares/authMiddleware';
 
 const router = express.Router();
 
@@ -18,7 +18,7 @@ router.get('/status', (req, res) => {
     res.status(StatusCodes.OK).json({ message: 'Hello world!' });
 });
 
-// router.all('*', authMiddleware);
+router.all('*', authMiddleware);
 
 router.use('/boards', boardRouter);
 router.use('/columns', columnRouter);

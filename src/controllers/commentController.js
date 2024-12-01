@@ -1,5 +1,22 @@
 import { StatusCodes } from 'http-status-codes';
-import commentService from '~/services/commentService';
+import { commentService } from '~/services';
+
+const get = async (req, res, next) => {
+    try {
+        const page = req.query.page;
+        const pageSize = req.query.pageSize;
+        const comments = await commentService.get({ page, pageSize });
+
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            meta: comments.meta,
+            data: comments.data,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
 const getOne = async (req, res, next) => {
     try {
@@ -18,10 +35,11 @@ const getOne = async (req, res, next) => {
 
 const store = async (req, res, next) => {
     try {
-        const comment = await commentService.store(req.body);
+        const comment = await commentService.store({ ...req.body, userId: req.user.id });
+        comment.data.dataValues.user = req.user;
 
-        res.io.emit('notification', {
-            message: 'hello',
+        res.io.emit('receiveComment', {
+            comment: comment,
         });
 
         res.status(StatusCodes.CREATED).json({
@@ -54,7 +72,7 @@ const destroy = async (req, res, next) => {
     try {
         const commentId = req.params.id;
 
-        const updatedComment = await commentService.destroy(commentId, req.body);
+        const updatedComment = await commentService.destroy({ id: commentId });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
@@ -66,4 +84,4 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export default { getOne, store, update, destroy };
+export default { get, getOne, store, update, destroy };
