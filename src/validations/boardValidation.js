@@ -7,6 +7,7 @@ const store = async (req, res, next) => {
         title: Joi.string().required().min(3).max(50).trim().strict(),
         description: Joi.string().required().min(3).max(255).trim().strict(),
         type: Joi.string().valid('public', 'private').required(),
+        image: Joi.string().optional(),
     });
 
     try {

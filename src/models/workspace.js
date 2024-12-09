@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     }
     Workspace.init(
         {
+            userId: DataTypes.INTEGER,
             title: DataTypes.STRING,
             type: DataTypes.STRING,
         },

@@ -7,6 +7,7 @@ const store = async (req, res, next) => {
         userId: Joi.number().required(),
         objectId: Joi.number().required(),
         objectType: Joi.string().required().min(3).max(255).trim().strict(),
+        active: Joi.bool().optional(),
     });
 
     try {

@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         {
             checklistId: DataTypes.INTEGER,
             title: DataTypes.STRING,
-            status: DataTypes.STRING,
+            status: { type: DataTypes.STRING, defaultValue: 'incomplete' },
         },
         {
             sequelize,

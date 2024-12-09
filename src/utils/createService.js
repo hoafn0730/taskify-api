@@ -47,7 +47,7 @@ const createService = (model, options = {}) => ({
                 return { message: 'Instance already exists!' };
             }
 
-            return { data: instance };
+            return instance;
         } catch (error) {
             throw error;
         }
@@ -72,10 +72,10 @@ const createService = (model, options = {}) => ({
         }
     },
 
-    destroy: async (conditions) => {
+    destroy: async (id) => {
         try {
             return await model.destroy({
-                where: conditions,
+                where: { id },
             });
         } catch (error) {
             throw error;

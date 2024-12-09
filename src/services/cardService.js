@@ -1,6 +1,6 @@
+import slugify from 'slugify';
 import { v4 as uuidv4 } from 'uuid';
 import db from '~/models';
-import { slugify } from '~/utils/formatters';
 
 const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
     try {
@@ -11,15 +11,17 @@ const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
             limit: pageSize,
             distinct: true,
             include: [
-                { model: db.Attachment, as: 'cover' },
-                { model: db.Attachment, as: 'attachments' },
+                { model: db.Attachment, as: 'cover', required: false },
+                { model: db.Attachment, as: 'attachments', required: false },
                 {
                     model: db.Checklist,
                     as: 'checklists',
+                    required: false,
                     include: [
                         {
                             model: db.CheckItem,
                             as: 'checkItems',
+                            required: false,
                         },
                     ],
                 },
@@ -45,27 +47,32 @@ const getOneBySlug = async (slug, archivedAt) => {
         const data = await db.Card.findOne({
             where: { slug: slug, archivedAt: archivedAt || null },
             include: [
-                { model: db.Column, as: 'column' },
-                { model: db.Attachment, as: 'attachments' },
-                { model: db.Attachment, as: 'cover' },
+                { model: db.Column, as: 'column', required: false },
+                { model: db.Attachment, as: 'attachments', required: false },
+                { model: db.Attachment, as: 'cover', required: false },
                 {
                     model: db.Comment,
                     as: 'comments',
+                    required: false,
                     where: { commentableType: 'card' },
                     include: [
                         {
                             model: db.User,
                             as: 'user',
+                            required: false,
                         },
                     ],
+                    order: [['createdAt', 'DESC']],
                 },
                 {
                     model: db.Checklist,
                     as: 'checklists',
+                    required: false,
                     include: [
                         {
                             model: db.CheckItem,
                             as: 'checkItems',
+                            required: false,
                         },
                     ],
                 },
@@ -74,6 +81,7 @@ const getOneBySlug = async (slug, archivedAt) => {
                 [{ model: db.Checklist, as: 'checklists' }, { model: db.CheckItem, as: 'checkItems' }, 'id', 'ASC'],
             ],
         });
+        console.log('🚀 ~ getOneBySlug ~ data:', data);
 
         return data;
     } catch (error) {
@@ -84,7 +92,7 @@ const getOneBySlug = async (slug, archivedAt) => {
 const store = async (data) => {
     try {
         const [card, created] = await db.Card.findOrCreate({
-            where: { ...data, uuid: uuidv4(), slug: slugify(data.title) },
+            where: { ...data, uuid: uuidv4(), slug: slugify(data.title, { lower: true }) },
         });
 
         // Update column
@@ -104,7 +112,7 @@ const store = async (data) => {
 const update = async (cardId, data) => {
     try {
         const updated = await db.Card.update(
-            { ...data, slug: slugify(data.title) },
+            { ...data, ...(data.title ? { slug: slugify(data.title, { lower: true }) } : {}) },
             {
                 where: {
                     id: cardId,

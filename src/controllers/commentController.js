@@ -36,7 +36,7 @@ const getOne = async (req, res, next) => {
 const store = async (req, res, next) => {
     try {
         const comment = await commentService.store({ ...req.body, userId: req.user.id });
-        comment.data.dataValues.user = req.user;
+        comment.dataValues.user = req.user;
 
         res.io.emit('receiveComment', {
             comment: comment,
@@ -72,7 +72,7 @@ const destroy = async (req, res, next) => {
     try {
         const commentId = req.params.id;
 
-        const updatedComment = await commentService.destroy({ id: commentId });
+        const updatedComment = await commentService.destroy(commentId);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,

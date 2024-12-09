@@ -20,7 +20,7 @@ const store = async (data) => {
             return { message: 'Instance was exist!' };
         }
 
-        return { data: checklist };
+        return checklist;
     } catch (error) {
         throw error;
     }
@@ -65,7 +65,7 @@ const storeCheckItem = async (data) => {
     try {
         const checkItem = await db.CheckItem.create(data);
 
-        return { data: checkItem };
+        return checkItem;
     } catch (error) {
         throw error;
     }

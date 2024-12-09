@@ -1,5 +1,22 @@
 import { StatusCodes } from 'http-status-codes';
-import notificationService from '~/services/notificationService';
+import { notificationService } from '~/services';
+
+const get = async (req, res, next) => {
+    try {
+        const page = req.query.page;
+        const pageSize = req.query.pageSize;
+        const comments = await notificationService.get({ page, pageSize });
+
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            meta: comments.meta,
+            data: comments.data,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
 const getOne = async (req, res, next) => {
     try {
@@ -66,4 +83,4 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export default { getOne, store, update, destroy };
+export default { get, getOne, store, update, destroy };

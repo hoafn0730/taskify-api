@@ -48,6 +48,9 @@ app.use((req, res, next) => {
     next();
 });
 app.use('/api/v1', APIs_V1);
+app.use('/', (req, res) => {
+    res.send('Hello world!');
+});
 app.use(errorHandlingMiddleware);
 
 httpServer.listen(port, async () => {

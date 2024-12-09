@@ -4,9 +4,8 @@ import cardService from '~/services/cardService';
 const get = async (req, res, next) => {
     try {
         const page = req.query.page;
-        const pageSize = req.query.pageSize;
-        const query = req.query.q;
-        const cards = await cardService.get({ page, pageSize, query });
+        const pageSize = req.query.pageSize || null;
+        const cards = await cardService.get({ page, pageSize });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,

@@ -1,6 +1,24 @@
 import { StatusCodes } from 'http-status-codes';
 import attachmentService from '~/services/attachmentService';
 
+const get = async (req, res, next) => {
+    try {
+        const page = req.query.page;
+        const pageSize = req.query.pageSize;
+        const query = req.query.q;
+        const boards = await attachmentService.get({ page, pageSize, query });
+
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            meta: boards.meta,
+            data: boards.data,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const getOne = async (req, res, next) => {
     try {
         const attachmentId = req.params.id;
@@ -62,4 +80,4 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export default { getOne, store, update, destroy };
+export default { get, getOne, store, update, destroy };

@@ -1,5 +1,5 @@
+import slugify from 'slugify';
 import db from '~/models';
-import { slugify } from '~/utils/formatters';
 import columnService from './columnService';
 import cardService from './cardService';
 
@@ -88,14 +88,14 @@ const getBoardBySlug = async (slug) => {
 const store = async (data) => {
     try {
         const [board, created] = await db.Board.findOrCreate({
-            where: { ...data, slug: slugify(data.title) },
+            where: { ...data, slug: slugify(data.title, { lower: true }) },
         });
 
         if (!created) {
             return { message: 'Instance was exist!' };
         }
 
-        return { data: board };
+        return board;
     } catch (error) {
         throw error;
     }
@@ -104,7 +104,7 @@ const store = async (data) => {
 const update = async (boardId, data) => {
     try {
         const board = await db.Board.update(
-            { ...data },
+            { ...data, ...(data.title ? { slug: slugify(data.title, { lower: true }) } : {}) },
             {
                 where: {
                     id: boardId,
@@ -135,15 +135,22 @@ const moveCardToDifferentColumn = async (data) => {
     // eslint-disable-next-line no-useless-catch
     try {
         // Cap nhat mang cardOrderIds trong column bau dau
-        await columnService.update(data.prevColumnId, { cardOrderIds: data.prevCardOrderIds });
+        await columnService.update(data.prevColumnId, {
+            cardOrderIds: data.prevCardOrderIds,
+        });
 
         // Cap nhat mang cardOrderIds trong column moi
-        await columnService.update(data.nextColumnId, { cardOrderIds: data.nextCardOrderIds });
+        await columnService.update(data.nextColumnId, {
+            cardOrderIds: data.nextCardOrderIds,
+        });
 
         const card = await db.Card.findOne({ where: { id: data.currentCardId } });
 
         // Cap nhat truong columnId moi
-        await cardService.update(data.currentCardId, { columnId: data.nextColumnId, title: card.title });
+        await cardService.update(data.currentCardId, {
+            columnId: data.nextColumnId,
+            title: card.title,
+        });
 
         return { message: 'Successfully' };
     } catch (error) {

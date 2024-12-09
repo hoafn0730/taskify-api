@@ -17,6 +17,7 @@ module.exports = {
             },
             status: {
                 type: Sequelize.STRING,
+                defaultValue: 'incomplete',
             },
             createdAt: {
                 allowNull: false,

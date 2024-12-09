@@ -6,7 +6,6 @@ const router = express.Router();
 
 router.get('/', boardController.get);
 router.get('/:slug', boardController.getBoardBySlug);
-router.get('/:id', boardController.getOne);
 router.post('/', boardValidation.store, boardController.store);
 router.put('/:id', boardValidation.update, boardController.update);
 router.delete('/:id', boardValidation.destroy, boardController.destroy);

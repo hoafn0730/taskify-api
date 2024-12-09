@@ -9,9 +9,6 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER,
             },
-            workspaceId: {
-                type: Sequelize.INTEGER,
-            },
             title: {
                 type: Sequelize.STRING,
             },

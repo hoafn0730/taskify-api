@@ -6,4 +6,4 @@ const extractToken = (authorization) => {
     return null;
 };
 
-export { extractToken };
+export default { extractToken };

@@ -1,5 +1,24 @@
 import { StatusCodes } from 'http-status-codes';
-import userService from '~/services/userService';
+import { userService } from '~/services';
+import ApiError from '~/utils/ApiError';
+
+const get = async (req, res, next) => {
+    try {
+        const page = req.query.page;
+        const pageSize = req.query.pageSize;
+        const query = req.query.q;
+        const users = await userService.get({ page, pageSize, query });
+
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            meta: users.meta,
+            data: users.data,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
 const getOne = async (req, res, next) => {
     try {
@@ -50,16 +69,20 @@ const destroy = async (req, res, next) => {
     try {
         const userId = req.params.id;
 
-        const updatedUser = await userService.destroy(userId, req.body);
+        if (req.user.id === +userId) {
+            return next(new ApiError(StatusCodes.CONFLICT), StatusCodes[StatusCodes.CONFLICT]);
+        }
+
+        const deleted = await userService.destroy(userId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedUser,
+            data: deleted,
         });
     } catch (error) {
         next(error);
     }
 };
 
-export default { getOne, store, update, destroy };
+export default { get, getOne, store, update, destroy };

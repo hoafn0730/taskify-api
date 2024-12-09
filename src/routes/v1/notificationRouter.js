@@ -4,6 +4,7 @@ import { notificationValidation } from '~/validations/notificationValidation';
 
 const router = express.Router();
 
+router.get('/', notificationController.get);
 router.get('/:id', notificationController.getOne);
 router.post('/', notificationValidation.store, notificationController.store);
 router.put('/:id', notificationValidation.update, notificationController.update);

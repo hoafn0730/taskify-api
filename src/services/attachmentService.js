@@ -13,6 +13,30 @@ const opts = {
     resource_type: 'auto',
 };
 
+const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
+    try {
+        const skip = (page - 1) * pageSize;
+        const { count, rows } = await db.Attachment.findAndCountAll({
+            where: where,
+            offset: skip,
+            limit: pageSize,
+            distinct: true,
+            ...options,
+        });
+
+        return {
+            meta: {
+                page,
+                pageSize,
+                total: count,
+            },
+            data: rows,
+        };
+    } catch (error) {
+        throw error;
+    }
+};
+
 const getOne = async (attachmentId) => {
     try {
         const data = await db.Attachment.findOne({ where: { id: attachmentId } });
@@ -57,7 +81,7 @@ const store = async (data) => {
             );
         }
 
-        return { data: attachment };
+        return attachment;
     } catch (error) {
         throw error;
     }
@@ -98,9 +122,4 @@ const destroy = async (attachmentId) => {
     }
 };
 
-export default {
-    getOne,
-    store,
-    update,
-    destroy,
-};
+export default { get, getOne, store, update, destroy };

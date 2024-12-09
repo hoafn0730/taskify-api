@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
             userId: DataTypes.INTEGER,
             objectId: DataTypes.INTEGER,
             objectType: DataTypes.STRING,
-            role: DataTypes.STRING,
+            role: { type: DataTypes.STRING, defaultValue: 'user' },
+            active: DataTypes.BOOLEAN,
         },
         {
             sequelize,
