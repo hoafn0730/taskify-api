@@ -10,6 +10,7 @@ import attachmentRouter from './attachmentRouter';
 import memberRouter from './memberRouter';
 import commentRouter from './commentRouter';
 import notificationRouter from './notificationRouter';
+import workspaceRouter from './workspaceRouter';
 import authMiddleware from '~/middlewares/authMiddleware';
 
 const router = express.Router();
@@ -28,5 +29,6 @@ router.use('/members', memberRouter);
 router.use('/comments', commentRouter);
 router.use('/notifications', notificationRouter);
 router.use('/users', userRouter);
+router.use('/workspaces', workspaceRouter);
 
 export default router;

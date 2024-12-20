@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             this.hasMany(models.Column, { foreignKey: 'boardId', as: 'columns' });
             this.hasMany(models.Member, { foreignKey: 'objectId', as: 'members' });
+            this.hasMany(models.WorkspaceBoard, { foreignKey: 'boardId', onDelete: 'CASCADE' });
+            this.belongsToMany(models.Workspace, { through: models.WorkspaceBoard, foreignKey: 'boardId' });
         }
     }
     Board.init(

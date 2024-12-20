@@ -26,7 +26,7 @@ const store = async (data) => {
             return { message: 'Instance was exist!' };
         }
 
-        return { data: column };
+        return column;
     } catch (error) {
         throw error;
     }

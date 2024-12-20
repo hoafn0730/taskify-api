@@ -37,12 +37,12 @@ const getOne = async (req, res, next) => {
 
 const store = async (req, res, next) => {
     try {
-        const users = await userService.store(req.body);
+        const user = await userService.store(req.body);
 
         res.status(StatusCodes.CREATED).json({
             statusCode: StatusCodes.CREATED,
             message: StatusCodes[StatusCodes.CREATED],
-            data: users,
+            data: user,
         });
     } catch (error) {
         next(error);
@@ -53,12 +53,12 @@ const update = async (req, res, next) => {
     try {
         const userId = req.params.id;
 
-        const updatedUser = await userService.update(userId, req.body);
+        const updated = await userService.update(userId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedUser,
+            data: updated,
         });
     } catch (error) {
         next(error);

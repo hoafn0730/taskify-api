@@ -6,32 +6,24 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
 
 import APIs_V1 from './routes/v1';
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware';
 import { corsOptions } from './config/cors';
-import { closeDb, connection } from './config/connectDb';
+import sockets from './sockets';
+import db from './config/db';
 
 const hostname = process.env.HOST || 'localhost';
 const port = process.env.PORT || 8017;
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
-    cors: corsOptions,
-});
+const io = new Server(httpServer, { cors: corsOptions });
+const swaggerDocs = YAML.load('./swagger.yaml');
 
-io.on('connection', (socket) => {
-    console.log('A user connected');
-    // socket.emit('hello', 'world');
-    socket.broadcast.emit('hello', 'world1');
-
-    //Whenever someone disconnects this piece of code executed
-    socket.on('disconnect', function () {
-        console.log('A user disconnected');
-    });
-});
-
-connection();
+io.on('connection', sockets.connection);
+db.connection();
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(cors(corsOptions));
@@ -47,10 +39,13 @@ app.use((req, res, next) => {
     res.io = io;
     next();
 });
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/api/v1', APIs_V1);
-app.use('/', (req, res) => {
-    res.send('Hello world!');
+
+app.get('/', (req, res) => {
+    res.json('hello world');
 });
+
 app.use(errorHandlingMiddleware);
 
 httpServer.listen(port, async () => {
@@ -61,5 +56,5 @@ httpServer.listen(port, async () => {
 exitHook(() => {
     // eslint-disable-next-line no-console
     console.log('Exiting app');
-    closeDb();
+    db.close();
 });

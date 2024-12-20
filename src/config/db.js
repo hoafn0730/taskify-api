@@ -14,6 +14,8 @@ export const connection = async () => {
     }
 };
 
-export const closeDb = async () => {
+export const close = async () => {
     sequelize.close();
 };
+
+export default { connection, close };

@@ -1,0 +1,73 @@
+openapi: 3.0.0
+info:
+    title: My API
+    version: 1.0.0
+    description: API documentation
+basePath: '/api/v1'
+paths:
+    /boards:
+        get:
+            summary: Lấy danh sách các bảng
+            tags:
+                - Boards
+            responses:
+                200:
+                    description: Danh sách bảng được trả về thành công.
+        post:
+            summary: Tạo mới một bảng
+            tags:
+                - Boards
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                    description: Tên bảng
+                                    example: My New Board
+            responses:
+                201:
+                    description: Bảng được tạo thành công.
+    /boards/{id}:
+        put:
+            summary: Cập nhật thông tin bảng
+            tags:
+                - Boards
+            parameters:
+                in: path
+                name: id
+                required: true
+                schema:
+                    type: string
+                description: ID của bảng
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                    description: Tên mới của bảng
+                                    example: Updated Board Name
+            responses:
+                200:
+                    description: Bảng được cập nhật thành công.
+        delete:
+            summary: Xóa bảng
+            tags:
+                - Boards
+            parameters:
+                in: path
+                name: id
+                required: true
+                schema:
+                    type: string
+                description: ID của bảng
+            responses:
+                200:
+                    description: Bảng được xóa thành công.

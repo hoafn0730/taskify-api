@@ -45,9 +45,10 @@ const getOne = async (boardId) => {
 };
 
 const getBoardBySlug = async (slug) => {
+    // Debug Visualizer
     try {
         const data = await db.Board.findOne({
-            where: { slug: slug },
+            where: { slug },
             include: [
                 {
                     model: db.Column,
@@ -132,7 +133,6 @@ const destroy = async (boardId) => {
 };
 
 const moveCardToDifferentColumn = async (data) => {
-    // eslint-disable-next-line no-useless-catch
     try {
         // Cap nhat mang cardOrderIds trong column bau dau
         await columnService.update(data.prevColumnId, {

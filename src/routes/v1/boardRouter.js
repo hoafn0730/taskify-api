@@ -1,17 +1,28 @@
 import express from 'express';
 import boardController from '~/controllers/boardController';
+import boardMiddleware from '~/middlewares/boardMiddleware';
 import { boardValidation } from '~/validations/boardValidation';
 
 const router = express.Router();
 
 router.get('/', boardController.get);
-router.get('/:slug', boardController.getBoardBySlug);
+router.get('/search', boardController.search);
+router.get(
+    '/:slug',
+    // boardMiddleware.checkMemberRole('member', 'admin', 'owner'),
+    boardController.getBoardBySlug,
+);
 router.post('/', boardValidation.store, boardController.store);
-router.put('/:id', boardValidation.update, boardController.update);
-router.delete('/:id', boardValidation.destroy, boardController.destroy);
-
+router.put('/:id', boardMiddleware.checkMemberRole('admin', 'owner'), boardValidation.update, boardController.update);
+router.delete(
+    '/:id',
+    boardMiddleware.checkMemberRole('admin', 'owner'),
+    boardValidation.destroy,
+    boardController.destroy,
+);
 router.put(
     '/supports/moving_card',
+    // boardMiddleware.checkMemberRole('admin', 'owner'),
     boardValidation.moveCardToDifferentColumn,
     boardController.moveCardToDifferentColumn,
 );

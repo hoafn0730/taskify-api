@@ -81,7 +81,6 @@ const getOneBySlug = async (slug, archivedAt) => {
                 [{ model: db.Checklist, as: 'checklists' }, { model: db.CheckItem, as: 'checkItems' }, 'id', 'ASC'],
             ],
         });
-        console.log('🚀 ~ getOneBySlug ~ data:', data);
 
         return data;
     } catch (error) {
@@ -103,7 +102,7 @@ const store = async (data) => {
             return { message: 'Instance was exist!' };
         }
 
-        return { data: card };
+        return card;
     } catch (error) {
         throw error;
     }
@@ -121,9 +120,7 @@ const update = async (cardId, data) => {
         );
 
         if (updated[0]) {
-            const card = await db.Card.findOne({ where: { id: cardId } });
-
-            return card;
+            return db.Card.findOne({ where: { id: cardId } });
         } else {
             return { message: 'error' };
         }

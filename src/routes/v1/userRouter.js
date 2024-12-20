@@ -1,8 +1,11 @@
 import express from 'express';
 import userController from '~/controllers/userController';
+import authMiddleware from '~/middlewares/authMiddleware';
 import { userValidation } from '~/validations/userValidation';
 
 const router = express.Router();
+
+router.all('*', authMiddleware.checkRole('admin', 'owner'));
 
 router.get('/', userController.get);
 router.get('/:id', userController.getOne);

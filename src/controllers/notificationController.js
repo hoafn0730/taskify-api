@@ -5,13 +5,13 @@ const get = async (req, res, next) => {
     try {
         const page = req.query.page;
         const pageSize = req.query.pageSize;
-        const comments = await notificationService.get({ page, pageSize });
+        const notifications = await notificationService.get({ page, pageSize });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            meta: comments.meta,
-            data: comments.data,
+            meta: notifications.meta,
+            data: notifications.data,
         });
     } catch (error) {
         next(error);
@@ -21,7 +21,7 @@ const get = async (req, res, next) => {
 const getOne = async (req, res, next) => {
     try {
         const notificationId = req.params.id;
-        const notification = await notificationService.getOne(notificationId);
+        const notification = await notificationService.getOne({ where: { id: notificationId } });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
@@ -55,12 +55,12 @@ const update = async (req, res, next) => {
     try {
         const notificationId = req.params.id;
 
-        const updatedNotification = await notificationService.update(notificationId, req.body);
+        const updated = await notificationService.update(notificationId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedNotification,
+            data: updated,
         });
     } catch (error) {
         next(error);
@@ -71,12 +71,12 @@ const destroy = async (req, res, next) => {
     try {
         const notificationId = req.params.id;
 
-        const updatedNotification = await notificationService.destroy(notificationId, req.body);
+        const deleted = await notificationService.destroy(notificationId);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedNotification,
+            data: deleted,
         });
     } catch (error) {
         next(error);

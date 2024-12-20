@@ -21,7 +21,7 @@ const get = async (req, res, next) => {
 const getOne = async (req, res, next) => {
     try {
         const commentId = req.params.id;
-        const comment = await commentService.getOne(commentId);
+        const comment = await commentService.getOne({ where: { id: commentId } });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
@@ -56,12 +56,12 @@ const update = async (req, res, next) => {
     try {
         const commentId = req.params.id;
 
-        const updatedComment = await commentService.update(commentId, req.body);
+        const updated = await commentService.update(commentId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedComment,
+            data: updated,
         });
     } catch (error) {
         next(error);
@@ -72,12 +72,12 @@ const destroy = async (req, res, next) => {
     try {
         const commentId = req.params.id;
 
-        const updatedComment = await commentService.destroy(commentId);
+        const deleted = await commentService.destroy(commentId);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedComment,
+            data: deleted,
         });
     } catch (error) {
         next(error);

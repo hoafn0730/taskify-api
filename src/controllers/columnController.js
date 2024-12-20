@@ -34,12 +34,12 @@ const update = async (req, res, next) => {
     try {
         const columnId = req.params.id;
 
-        const updatedColumn = await columnService.update(columnId, req.body);
+        const updated = await columnService.update(columnId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedColumn,
+            data: updated,
         });
     } catch (error) {
         next(error);
@@ -50,12 +50,12 @@ const destroy = async (req, res, next) => {
     try {
         const columnId = req.params.id;
 
-        const updatedColumn = await columnService.destroy(columnId, req.body);
+        const deleted = await columnService.destroy(columnId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedColumn,
+            data: deleted,
         });
     } catch (error) {
         next(error);

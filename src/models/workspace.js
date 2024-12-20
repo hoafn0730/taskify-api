@@ -8,9 +8,20 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            // define association here
+            this.hasMany(models.WorkspaceBoard, { foreignKey: 'workspaceId', onDelete: 'CASCADE' });
+            this.belongsToMany(models.Board, {
+                through: models.WorkspaceBoard,
+                foreignKey: 'workspaceId',
+                as: 'boards',
+            });
+            this.belongsToMany(models.Board, {
+                through: models.WorkspaceBoard,
+                foreignKey: 'workspaceId',
+                as: 'boardStars',
+            });
         }
     }
+
     Workspace.init(
         {
             userId: DataTypes.INTEGER,

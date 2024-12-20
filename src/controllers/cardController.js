@@ -52,12 +52,12 @@ const update = async (req, res, next) => {
     try {
         const cardId = req.params.id;
 
-        const updatedCard = await cardService.update(cardId, req.body);
+        const updated = await cardService.update(cardId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedCard,
+            data: updated,
         });
     } catch (error) {
         next(error);
@@ -68,12 +68,12 @@ const destroy = async (req, res, next) => {
     try {
         const cardId = req.params.id;
 
-        const updatedCard = await cardService.destroy(cardId, req.body);
+        const deleted = await cardService.destroy(cardId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedCard,
+            data: deleted,
         });
     } catch (error) {
         next(error);

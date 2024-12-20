@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import checklistService from '~/services/checklistService';
+import { checklistService } from '~/services';
 
 const getOneBySlug = async (req, res, next) => {
     try {
@@ -34,12 +34,12 @@ const update = async (req, res, next) => {
     try {
         const checklistId = req.params.id;
 
-        const updatedChecklist = await checklistService.update(checklistId, req.body);
+        const updated = await checklistService.update(checklistId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedChecklist,
+            data: updated,
         });
     } catch (error) {
         next(error);
@@ -50,12 +50,12 @@ const destroy = async (req, res, next) => {
     try {
         const checklistId = req.params.id;
 
-        const updatedChecklist = await checklistService.destroy(checklistId, req.body);
+        const deleted = await checklistService.destroy(checklistId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedChecklist,
+            data: deleted,
         });
     } catch (error) {
         next(error);
@@ -83,12 +83,12 @@ const updateCheckItem = async (req, res, next) => {
         const checklistId = req.params.id;
         const checkItemId = req.params.checkItemId;
 
-        const updatedChecklist = await checklistService.updateCheckItem(checklistId, checkItemId, req.body);
+        const updated = await checklistService.updateCheckItem(checklistId, checkItemId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedChecklist,
+            data: updated,
         });
     } catch (error) {
         next(error);
@@ -100,12 +100,12 @@ const destroyCheckItem = async (req, res, next) => {
         const checklistId = req.params.id;
         const checkItemId = req.params.checkItemId;
 
-        const updatedChecklist = await checklistService.destroyCheckItem(checklistId, checkItemId);
+        const deleted = await checklistService.destroyCheckItem(checklistId, checkItemId);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updatedChecklist,
+            data: deleted,
         });
     } catch (error) {
         next(error);

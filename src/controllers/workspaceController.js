@@ -1,33 +1,31 @@
 import { StatusCodes } from 'http-status-codes';
-import attachmentService from '~/services/attachmentService';
+import db from '~/models';
+import { workspaceService } from '~/services';
 
 const get = async (req, res, next) => {
     try {
-        const page = req.query.page;
-        const pageSize = req.query.pageSize;
-        const query = req.query.q;
-        const attachments = await attachmentService.get({ page, pageSize, query });
-
-        res.status(StatusCodes.OK).json({
-            statusCode: StatusCodes.OK,
-            message: StatusCodes[StatusCodes.OK],
-            meta: attachments.meta,
-            data: attachments.data,
+        const workspace = await workspaceService.getOne({
+            where: { userId: req?.user?.id || '14' },
+            include: [
+                {
+                    model: db.Board,
+                    as: 'boards',
+                    through: {
+                        attributes: [],
+                    },
+                },
+                {
+                    model: db.Board,
+                    as: 'boardStars',
+                    through: { attributes: [], where: { isStarred: true } },
+                },
+            ],
         });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const getOne = async (req, res, next) => {
-    try {
-        const attachmentId = req.params.id;
-        const attachments = await attachmentService.getOne(attachmentId);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: attachments,
+            data: workspace,
         });
     } catch (error) {
         next(error);
@@ -36,12 +34,12 @@ const getOne = async (req, res, next) => {
 
 const store = async (req, res, next) => {
     try {
-        const attachment = await attachmentService.store(req.body);
+        const workspace = await workspaceService.store({ ...req.body, userId: req.user.id });
 
         res.status(StatusCodes.CREATED).json({
             statusCode: StatusCodes.CREATED,
             message: StatusCodes[StatusCodes.CREATED],
-            data: attachment,
+            data: workspace,
         });
     } catch (error) {
         next(error);
@@ -50,9 +48,8 @@ const store = async (req, res, next) => {
 
 const update = async (req, res, next) => {
     try {
-        const attachmentId = req.params.id;
-
-        const updated = await attachmentService.update(attachmentId, req.body);
+        const workspaceId = req.params.id;
+        const updated = await workspaceService.update(workspaceId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
@@ -66,9 +63,8 @@ const update = async (req, res, next) => {
 
 const destroy = async (req, res, next) => {
     try {
-        const attachmentId = req.params.id;
-
-        const deleted = await attachmentService.destroy(attachmentId, req.body);
+        const workspaceId = req.params.id;
+        const deleted = await workspaceService.destroy(workspaceId);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
@@ -80,4 +76,4 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export default { get, getOne, store, update, destroy };
+export default { get, store, update, destroy };
