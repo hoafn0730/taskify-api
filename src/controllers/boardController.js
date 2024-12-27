@@ -1,8 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
 import { Op } from 'sequelize';
+import ApiError from '~/utils/ApiError';
 import { memberService } from '~/services';
 import boardService from '~/services/boardService';
-import ApiError from '~/utils/ApiError';
 
 const get = async (req, res, next) => {
     try {

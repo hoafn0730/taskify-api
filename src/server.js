@@ -1,19 +1,19 @@
-import express from 'express';
 import 'dotenv/config';
-import exitHook from 'async-exit-hook';
 import cors from 'cors';
-import morgan from 'morgan';
-import cookieParser from 'cookie-parser';
-import { createServer } from 'http';
-import { Server } from 'socket.io';
-import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
+import morgan from 'morgan';
+import express from 'express';
+import { Server } from 'socket.io';
+import { createServer } from 'http';
+import exitHook from 'async-exit-hook';
+import cookieParser from 'cookie-parser';
+import swaggerUi from 'swagger-ui-express';
 
-import APIs_V1 from './routes/v1';
-import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware';
-import { corsOptions } from './config/cors';
-import sockets from './sockets';
 import db from './config/db';
+import sockets from './sockets';
+import APIs_V1 from './routes/v1';
+import { corsOptions } from './config/cors';
+import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware';
 
 const hostname = process.env.HOST || 'localhost';
 const port = process.env.PORT || 8017;

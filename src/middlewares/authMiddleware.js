@@ -29,7 +29,7 @@ const isAuthorized = async (req, res, next) => {
         });
 
         // eslint-disable-next-line no-unused-vars
-        const { id, banner, bio, role, active, ...userData } = resData.data;
+        const { id, banner, bio, role, active, require2FA, ...userData } = resData.data;
         const [user, created] = await db.User.findOrCreate({
             where: { uid: id },
             defaults: {
@@ -49,8 +49,11 @@ const isAuthorized = async (req, res, next) => {
 };
 
 const checkRole = (...roles) => {
+    // roles.some((role) => role.includes(req?.user?.role))
+    //
+
     return (req, res, next) => {
-        if (!req.user && !roles.includes(req?.user?.role)) {
+        if (!req.user || !roles.includes(req?.user?.role)) {
             return next(new ApiError(StatusCodes.FORBIDDEN, 'You have no access!'));
         }
 
