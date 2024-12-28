@@ -13,6 +13,7 @@ router.get(
     boardController.getBoardBySlug,
 );
 router.post('/', boardValidation.store, boardController.store);
+router.post('/generate', boardController.generate);
 router.put('/:id', boardMiddleware.checkMemberRole('admin', 'owner'), boardValidation.update, boardController.update);
 router.put(
     '/supports/moving_card',

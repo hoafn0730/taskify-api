@@ -135,4 +135,27 @@ const moveCardToDifferentColumn = async (req, res, next) => {
         next(error);
     }
 };
-export default { get, search, getBoardBySlug, store, update, destroy, moveCardToDifferentColumn };
+
+const generate = async (req, res, next) => {
+    try {
+        const board = await boardService.generate(req.body.content);
+
+        await memberService.store({
+            userId: req.user.id,
+            objectId: board.id,
+            objectType: 'board',
+            role: 'owner',
+            active: true,
+        });
+
+        res.status(StatusCodes.CREATED).json({
+            statusCode: StatusCodes.CREATED,
+            message: StatusCodes[StatusCodes.CREATED],
+            data: board,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export default { get, search, getBoardBySlug, store, update, destroy, moveCardToDifferentColumn, generate };
