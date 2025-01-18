@@ -47,6 +47,7 @@ const getOneBySlug = async (slug, archivedAt) => {
         const data = await db.Card.findOne({
             where: { slug: slug, archivedAt: archivedAt || null },
             include: [
+                { model: db.Board, as: 'board', required: false },
                 { model: db.Column, as: 'column', required: false },
                 { model: db.Attachment, as: 'attachments', required: false },
                 { model: db.Attachment, as: 'cover', required: false },

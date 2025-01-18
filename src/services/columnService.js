@@ -2,9 +2,9 @@ import slugify from 'slugify';
 import { v4 as uuidv4 } from 'uuid';
 import db from '~/models';
 
-const getOne = async (columnId) => {
+const getOne = async (id) => {
     try {
-        const data = await db.Column.findOne({ where: { id: columnId } });
+        const data = await db.Column.findOne({ where: { id } });
 
         return data;
     } catch (error) {

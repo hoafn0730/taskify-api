@@ -44,14 +44,11 @@ const isAuthorized = async (req, res, next) => {
 
         next();
     } catch (error) {
-        next(error);
+        next(new ApiError(error.status, error.message));
     }
 };
 
 const checkRole = (...roles) => {
-    // roles.some((role) => role.includes(req?.user?.role))
-    //
-
     return (req, res, next) => {
         if (!req.user || !roles.includes(req?.user?.role)) {
             return next(new ApiError(StatusCodes.FORBIDDEN, 'You have no access!'));

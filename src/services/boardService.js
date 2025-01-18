@@ -30,25 +30,7 @@ const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
     }
 };
 
-const getOne = async (boardId) => {
-    try {
-        const data = await db.Board.findOne({
-            where: { id: boardId },
-            include: {
-                model: db.Column,
-                as: 'columns',
-                include: { model: db.Card, as: 'cards' },
-            },
-        });
-
-        return data;
-    } catch (error) {
-        throw error;
-    }
-};
-
 const getBoardBySlug = async (slug) => {
-    // Debug Visualizer
     try {
         const data = await db.Board.findOne({
             where: { slug },
@@ -171,73 +153,58 @@ const generate = async (content) => {
         const [board, created] = await db.Board.findOrCreate({
             where: {
                 title: data.title,
+                slug: slugify(data.title, { lower: true }),
+            },
+            defaults: {
                 description: data.description,
                 type: data.type,
-                slug: slugify(data.title, { lower: true }),
             },
             raw: true,
         });
 
-        // * B3: Tao nhieu column cua board vua tao
-        const orderedColumns = mapOrder(data.columns, data.columnOrderIds, 'uuid').map((col) => ({
-            ...col,
-            boardId: board.id,
-            uuid: uuidv4(),
-            slug: slugify(col.title, { lower: true }),
-        }));
-
-        const columnOrderIds = [];
-        // * tao card cho tung column
-        for (const col of orderedColumns) {
-            const [column] = await db.Column.findOrCreate({
-                where: {
-                    boardId: col.boardId,
-                    title: col.title,
-                    uuid: col.uuid,
-                    slug: col.slug,
-                },
-                raw: true,
-            });
-            const orderedCards = mapOrder(col.cards, col.cardOrderIds, 'uuid').map((card) => ({
-                ...card,
-                boardId: board.id,
-                columnId: column.id,
-                uuid: uuidv4(),
-                slug: slugify(card.title, { lower: true }),
-            }));
-            const cards = await db.Card.bulkCreate(orderedCards, { raw: true });
-
-            // * update cardOrderIds in columns
-            columnService.update(column.id, { cardOrderIds: cards.map((card) => card.uuid) });
-            columnOrderIds.push(column.uuid);
-
-            for (const [cardIndex, card] of cards.entries()) {
-                const checklists = await db.Checklist.bulkCreate(
-                    col.cards[cardIndex].checklists.map((checklist) => ({
-                        boardId: board.id,
-                        cardId: card.id,
-                        title: checklist.title,
-                    })),
-                    { raw: true },
-                );
-
-                for (const [checklistIndex, checklist] of checklists.entries()) {
-                    await db.CheckItem.bulkCreate(
-                        col.cards[cardIndex].checklists[checklistIndex].checkItems.map((checkItem) => ({
-                            checklistId: checklist.id,
-                            title: checkItem.title,
-                        })),
-                    );
-                }
-            }
-        }
-
-        // * update columnOrderIds in board
-        update(board.id, { columnOrderIds: columnOrderIds });
-
         if (!created) {
             return { message: 'Instance was exist!' };
         }
+
+        // * B3: Tao nhieu column cua board vua tao
+        const orderedColumns = mapOrder(data.columns, data.columnOrderIds, 'uuid');
+
+        const columns = await db.Column.bulkCreate(
+            orderedColumns.map((col) => ({
+                ...col,
+                boardId: board.id,
+                uuid: uuidv4(),
+                slug: slugify(col.title, { lower: true }),
+            })),
+            { raw: true },
+        );
+
+        await update(board.id, { columnOrderIds: columns.map((col) => col.uuid) });
+
+        const allCards = [];
+        for (const [index, col] of columns.entries()) {
+            const orderedCards = mapOrder(data.columns[index].cards, data.columns[index].cardOrderIds, 'uuid').map(
+                (card) => ({
+                    ...card,
+                    boardId: board.id,
+                    columnId: col.id,
+                    uuid: uuidv4(),
+                    slug: slugify(card.title, { lower: true }),
+                }),
+            );
+            allCards.push(...orderedCards);
+        }
+
+        // * Tạo tất cả thẻ trong một lần
+        const cards = await db.Card.bulkCreate(allCards, { raw: true });
+
+        // * Cập nhật cardOrderIds trong các cột
+        const updateColumnsPromises = columns.map((column) =>
+            columnService.update(column.id, {
+                cardOrderIds: cards.filter((card) => card.columnId === column.id).map((card) => card.uuid),
+            }),
+        );
+        await Promise.all(updateColumnsPromises);
 
         return board;
     } catch (error) {
@@ -247,7 +214,6 @@ const generate = async (content) => {
 
 export default {
     get,
-    getOne,
     getBoardBySlug,
     store,
     update,

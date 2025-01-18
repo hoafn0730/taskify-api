@@ -7,16 +7,12 @@ const router = express.Router();
 
 router.get('/', boardController.get);
 router.get('/search', boardController.search);
-router.get(
-    '/:slug',
-    // boardMiddleware.checkMemberRole('member', 'admin', 'owner'),
-    boardController.getBoardBySlug,
-);
+router.get('/:slug', boardMiddleware.checkMemberRole('member', 'admin', 'owner'), boardController.getBoardBySlug);
 router.post('/', boardValidation.store, boardController.store);
 router.post('/generate', boardController.generate);
 router.put('/:id', boardMiddleware.checkMemberRole('admin', 'owner'), boardValidation.update, boardController.update);
 router.put(
-    '/supports/moving_card',
+    '/:id/moving-card',
     boardMiddleware.checkMemberRole('admin', 'owner'),
     boardValidation.moveCardToDifferentColumn,
     boardController.moveCardToDifferentColumn,

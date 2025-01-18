@@ -1,8 +1,6 @@
-import { StatusCodes } from 'http-status-codes';
 import { Op } from 'sequelize';
-import ApiError from '~/utils/ApiError';
-import { memberService } from '~/services';
-import boardService from '~/services/boardService';
+import { StatusCodes } from 'http-status-codes';
+import { boardService, memberService } from '~/services';
 
 const get = async (req, res, next) => {
     try {
@@ -51,13 +49,6 @@ const getBoardBySlug = async (req, res, next) => {
     try {
         const slug = req.params.slug;
         const board = await boardService.getBoardBySlug(slug);
-
-        // checkMember
-        const member = await memberService.getOne({
-            where: { userId: req.user.id, objectId: board.id, objectType: 'board' },
-        });
-
-        if (!member) return next(new ApiError(StatusCodes.FORBIDDEN, 'You are not member in the board!'));
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
@@ -109,7 +100,6 @@ const update = async (req, res, next) => {
 const destroy = async (req, res, next) => {
     try {
         const boardId = req.params.id;
-
         const deleted = await boardService.destroy(boardId, req.body);
 
         res.status(StatusCodes.OK).json({
@@ -140,13 +130,15 @@ const generate = async (req, res, next) => {
     try {
         const board = await boardService.generate(req.body.content);
 
-        await memberService.store({
-            userId: req.user.id,
-            objectId: board.id,
-            objectType: 'board',
-            role: 'owner',
-            active: true,
-        });
+        if (!board?.message) {
+            await memberService.store({
+                userId: req.user.id,
+                objectId: board.id,
+                objectType: 'board',
+                role: 'owner',
+                active: true,
+            });
+        }
 
         res.status(StatusCodes.CREATED).json({
             statusCode: StatusCodes.CREATED,
@@ -158,4 +150,13 @@ const generate = async (req, res, next) => {
     }
 };
 
-export default { get, search, getBoardBySlug, store, update, destroy, moveCardToDifferentColumn, generate };
+export default {
+    get,
+    search,
+    getBoardBySlug,
+    store,
+    update,
+    destroy,
+    moveCardToDifferentColumn,
+    generate,
+};

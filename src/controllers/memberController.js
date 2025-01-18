@@ -25,7 +25,7 @@ const store = async (req, res, next) => {
         // 1, tao member
         const [member, board] = await Promise.all([
             memberService.store({ ...req.body, userId: req.user.id }),
-            boardService.getOne(req.body.objectId), // * check type object
+            boardService.getOne({ where: { id: req.body.objectId } }), // * check type object
         ]);
 
         const { data: admins } = await memberService.get({

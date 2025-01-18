@@ -16,6 +16,19 @@ if (config.use_env_variable) {
     sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
+export const connection = async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('Connection has been established successfully.');
+    } catch (error) {
+        console.error('Unable to connect to the database:', error);
+    }
+};
+
+export const close = async () => {
+    sequelize.close();
+};
+
 fs.readdirSync(__dirname)
     .filter((file) => {
         return (
@@ -36,4 +49,4 @@ Object.keys(db).forEach((modelName) => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-module.exports = db;
+export default db;
