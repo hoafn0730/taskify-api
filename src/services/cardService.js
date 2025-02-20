@@ -143,4 +143,25 @@ const destroy = async (cardId) => {
     }
 };
 
-export default { get, getOneBySlug, store, update, destroy };
+const updateCover = async (cardId, data) => {
+    try {
+        const updated = await db.Card.update(
+            { image: data.image },
+            {
+                where: {
+                    id: cardId,
+                },
+            },
+        );
+
+        if (updated[0]) {
+            return db.Card.findOne({ where: { id: cardId } });
+        } else {
+            return { message: 'error' };
+        }
+    } catch (error) {
+        throw error;
+    }
+};
+
+export default { get, getOneBySlug, store, update, destroy, updateCover };

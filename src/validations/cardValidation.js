@@ -24,7 +24,6 @@ const update = async (req, res, next) => {
         columnId: Joi.number(),
         title: Joi.string().min(3).max(50).trim().strict(),
         description: Joi.string().min(3).trim().strict(),
-        image: Joi.string().min(3).max(255).trim().strict(),
         dueDate: Joi.date().allow(null),
         dueComplete: Joi.boolean().strict(),
         dueReminder: Joi.number().strict(),

@@ -150,6 +150,21 @@ const generate = async (req, res, next) => {
     }
 };
 
+const updateBackground = async (req, res, next) => {
+    try {
+        const boardId = req.params.id;
+        const updated = await boardService.updateBackground(boardId, req.body.file);
+
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: updated,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export default {
     get,
     search,
@@ -159,4 +174,5 @@ export default {
     destroy,
     moveCardToDifferentColumn,
     generate,
+    updateBackground,
 };

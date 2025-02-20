@@ -23,5 +23,10 @@ router.delete(
     boardValidation.destroy,
     boardController.destroy,
 );
+router.put(
+    '/:id/update-background',
+    boardMiddleware.checkMemberRole('admin', 'owner'),
+    boardController.updateBackground,
+);
 
 export default router;

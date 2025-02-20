@@ -28,7 +28,7 @@ app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store');
     next();
 });
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' }));

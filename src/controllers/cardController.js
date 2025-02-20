@@ -80,4 +80,19 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export default { get, getOneBySlug, store, update, destroy };
+const updateCover = async (req, res, next) => {
+    try {
+        const cardId = req.params.id;
+        const updated = await cardService.updateCover(cardId, req.body);
+
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: updated,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export default { get, getOneBySlug, store, update, destroy, updateCover };

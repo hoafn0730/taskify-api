@@ -5,6 +5,7 @@ import columnService from './columnService';
 import cardService from './cardService';
 import googleAIGenerate from './googleAiService';
 import { mapOrder } from '~/utils/sorts';
+import CloudinaryProvider from '~/providers/CloudinaryProvider';
 
 const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
     try {
@@ -212,6 +213,30 @@ const generate = async (content) => {
     }
 };
 
+const updateBackground = async (boardId, data) => {
+    try {
+        let board = await db.Board.findOne({ where: { id: boardId }, raw: true });
+
+        const result = await CloudinaryProvider.uploadFile(data);
+        const updated = await db.Board.update(
+            { image: result.secure_url },
+            {
+                where: {
+                    id: boardId,
+                },
+            },
+        );
+
+        if (!updated[0]) return;
+        await CloudinaryProvider.deleteFile(CloudinaryProvider.extractPublicId(board.image));
+        board.image = result.secure_url;
+
+        return board;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export default {
     get,
     getBoardBySlug,
@@ -220,4 +245,5 @@ export default {
     destroy,
     moveCardToDifferentColumn,
     generate,
+    updateBackground,
 };
