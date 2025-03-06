@@ -13,10 +13,13 @@ import notificationRouter from './notificationRouter';
 import workspaceRouter from './workspaceRouter';
 import transactionRouter from './transactionRouter';
 import authMiddleware from '~/middlewares/authMiddleware';
+import boardController from '~/controllers/boardController';
+import { boardService, cardService } from '~/services';
+import ApiError from '~/utils/ApiError';
 
 const router = express.Router();
 
-router.get('/status', (req, res) => {
+router.get('/status', async (req, res) => {
     res.status(StatusCodes.OK).json({ message: 'Hello world!' });
 });
 
@@ -46,5 +49,32 @@ router.use('/notifications', notificationRouter);
 router.use('/users', userRouter);
 router.use('/workspaces', workspaceRouter);
 router.use('/transactions', transactionRouter);
+
+router.get('/get-by-short-link', async (req, res, next) => {
+    const shortLink = req.query.shortLink;
+    const type = req.query.type;
+
+    let data;
+    switch (type) {
+        case 'board': {
+            data = await boardService.getOne({ where: { shortLink } });
+            break;
+        }
+        case 'card': {
+            data = await cardService.getOne({ where: { shortLink } });
+            break;
+        }
+        default:
+            return next(ApiError(StatusCodes.NOT_FOUND, 'NOT_FOUND'));
+    }
+
+    res.status(StatusCodes.OK).json({
+        statusCode: StatusCodes.OK,
+        message: StatusCodes[StatusCodes.OK],
+        data: data,
+    });
+});
+
+router.get('/combined-boards', boardController.getCombinedBoards);
 
 export default router;

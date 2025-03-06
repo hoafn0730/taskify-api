@@ -1,5 +1,6 @@
 import slugify from 'slugify';
 import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 import db from '~/models';
 import columnService from './columnService';
 import cardService from './cardService';
@@ -75,7 +76,7 @@ const getBoardBySlug = async (slug) => {
 const store = async (data) => {
     try {
         const [board, created] = await db.Board.findOrCreate({
-            where: { ...data, slug: slugify(data.title, { lower: true }) },
+            where: { ...data, slug: slugify(data.title, { lower: true }), shortLink: nanoid(8) },
         });
 
         if (!created) {

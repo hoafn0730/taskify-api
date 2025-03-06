@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
             description: DataTypes.TEXT,
             image: DataTypes.STRING,
             slug: { type: DataTypes.STRING, unique: true },
+            shortLink: DataTypes.STRING,
             uuid: DataTypes.STRING,
             dueDate: DataTypes.DATE,
             dueComplete: DataTypes.BOOLEAN,

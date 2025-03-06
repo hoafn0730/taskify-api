@@ -60,6 +60,22 @@ const getBoardBySlug = async (req, res, next) => {
     }
 };
 
+const getCombinedBoards = async (req, res, next) => {
+    try {
+        // /
+        const slug = req.params.slug;
+        const board = await boardService.getBoardBySlug(slug);
+
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: board,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const store = async (req, res, next) => {
     try {
         const board = await boardService.store(req.body);
@@ -175,4 +191,5 @@ export default {
     moveCardToDifferentColumn,
     generate,
     updateBackground,
+    getCombinedBoards,
 };

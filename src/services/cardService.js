@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import slugify from 'slugify';
 import { v4 as uuidv4 } from 'uuid';
 import db from '~/models';
@@ -92,7 +93,12 @@ const getOneBySlug = async (slug, archivedAt) => {
 const store = async (data) => {
     try {
         const [card, created] = await db.Card.findOrCreate({
-            where: { ...data, uuid: uuidv4(), slug: slugify(data.title, { lower: true }) },
+            where: {
+                ...data,
+                uuid: uuidv4(),
+                slug: slugify(data.title, { lower: true }),
+                shortLink: nanoid(8),
+            },
         });
 
         // Update column

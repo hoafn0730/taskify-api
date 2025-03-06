@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             slug: DataTypes.STRING,
             image: DataTypes.STRING,
+            shortLink: DataTypes.STRING,
             columnOrderIds: {
                 type: DataTypes.JSON,
                 allowNull: false,
