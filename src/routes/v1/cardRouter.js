@@ -6,6 +6,7 @@ import { cardValidation } from '~/validations/cardValidation';
 const router = express.Router();
 
 router.get('/', cardController.get);
+router.get('/up-next', cardController.getUpNext);
 router.get('/:slug', cardController.getOneBySlug);
 router.post('/', boardMiddleware.checkMemberRole('admin', 'owner'), cardValidation.store, cardController.store);
 router.put('/:id', boardMiddleware.checkMemberRole('admin', 'owner'), cardValidation.update, cardController.update);

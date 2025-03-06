@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
-import cardService from '~/services/cardService';
+import { Op } from 'sequelize';
+import { cardService } from '~/services';
 
 const get = async (req, res, next) => {
     try {
@@ -23,6 +24,23 @@ const getOneBySlug = async (req, res, next) => {
         const slug = req.params.slug;
         const archivedAt = req.params.archivedAt;
         const cards = await cardService.getOneBySlug(slug, archivedAt);
+
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: cards,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getUpNext = async (req, res, next) => {
+    try {
+        const cards = await cardService.get({
+            where: { dueDate: { [Op.not]: null, [Op.gt]: new Date() }, dueComplete: false, archivedAt: null },
+            order: [['dueDate', 'ASC']],
+        });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
@@ -95,4 +113,4 @@ const updateCover = async (req, res, next) => {
     }
 };
 
-export default { get, getOneBySlug, store, update, destroy, updateCover };
+export default { get, getOneBySlug, getUpNext, store, update, destroy, updateCover };

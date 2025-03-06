@@ -62,7 +62,6 @@ const getBoardBySlug = async (req, res, next) => {
 
 const getCombinedBoards = async (req, res, next) => {
     try {
-        // /
         const slug = req.params.slug;
         const board = await boardService.getBoardBySlug(slug);
 
