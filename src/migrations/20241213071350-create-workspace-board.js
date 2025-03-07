@@ -38,7 +38,7 @@ module.exports = {
                 type: Sequelize.INTEGER,
                 allowNull: true, // Không bắt buộc
             },
-            lastAccessed: {
+            lastView: {
                 type: Sequelize.DATE,
                 allowNull: true, // Không bắt buộc
             },

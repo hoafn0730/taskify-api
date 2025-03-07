@@ -1,8 +1,7 @@
-import { StatusCodes } from 'http-status-codes';
 import { Op } from 'sequelize';
-import ApiError from '~/utils/ApiError';
-import { memberService } from '~/services';
-import boardService from '~/services/boardService';
+import { StatusCodes } from 'http-status-codes';
+import { boardService, memberService, workspaceService } from '~/services';
+import db from '~/models';
 
 const get = async (req, res, next) => {
     try {
@@ -48,21 +47,61 @@ const search = async (req, res, next) => {
 };
 
 const getBoardBySlug = async (req, res, next) => {
+    const userId = req.user.id;
+
     try {
         const slug = req.params.slug;
         const board = await boardService.getBoardBySlug(slug);
 
-        // checkMember
-        const member = await memberService.getOne({
-            where: { userId: req.user.id, objectId: board.id, objectType: 'board' },
-        });
+        const workspace = await workspaceService.getOne({ where: { userId: userId }, raw: true });
 
-        if (!member) return next(new ApiError(StatusCodes.FORBIDDEN, 'You are not member in the board!'));
+        await db.WorkspaceBoard.upsert(
+            {
+                boardId: board.id,
+                workspaceId: workspace.id,
+                lastView: new Date(),
+            },
+            { workspaceId: workspace.id },
+        );
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
             data: board,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getCombinedBoards = async (req, res, next) => {
+    const userId = req.user.id;
+
+    try {
+        const workspace = await workspaceService.getOne({
+            where: { userId },
+            include: [
+                {
+                    model: db.Board,
+                    as: 'boards',
+                    through: {
+                        as: 'workspaceBoard',
+                        attributes: ['lastView'],
+                        where: { lastView: { [Op.not]: null } },
+                    },
+                },
+                {
+                    model: db.Board,
+                    as: 'boardStars',
+                    through: { attributes: [], where: { isStarred: true } },
+                },
+            ],
+        });
+
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: workspace,
         });
     } catch (error) {
         next(error);
@@ -109,7 +148,6 @@ const update = async (req, res, next) => {
 const destroy = async (req, res, next) => {
     try {
         const boardId = req.params.id;
-
         const deleted = await boardService.destroy(boardId, req.body);
 
         res.status(StatusCodes.OK).json({
@@ -135,4 +173,55 @@ const moveCardToDifferentColumn = async (req, res, next) => {
         next(error);
     }
 };
-export default { get, search, getBoardBySlug, store, update, destroy, moveCardToDifferentColumn };
+
+const generate = async (req, res, next) => {
+    try {
+        const board = await boardService.generate(req.body.content);
+
+        if (!board?.message) {
+            await memberService.store({
+                userId: req.user.id,
+                objectId: board.id,
+                objectType: 'board',
+                role: 'owner',
+                active: true,
+            });
+        }
+
+        res.status(StatusCodes.CREATED).json({
+            statusCode: StatusCodes.CREATED,
+            message: StatusCodes[StatusCodes.CREATED],
+            data: board,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const updateBackground = async (req, res, next) => {
+    try {
+        const boardId = req.params.id;
+        const updated = await boardService.updateBackground(boardId, req.body.file);
+
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: updated,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export default {
+    get,
+    search,
+    getBoardBySlug,
+    store,
+    update,
+    destroy,
+    moveCardToDifferentColumn,
+    generate,
+    updateBackground,
+    getCombinedBoards,
+};

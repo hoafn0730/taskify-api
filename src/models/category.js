@@ -1,26 +1,26 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class CheckItem extends Model {
+    class Category extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
          * The `models/index` file will call this method automatically.
          */
-        static associate() {
+        static associate(models) {
             // define association here
         }
     }
-    CheckItem.init(
+    Category.init(
         {
-            checklistId: DataTypes.INTEGER,
             title: DataTypes.STRING,
-            status: { type: DataTypes.STRING, defaultValue: 'incomplete' },
+            description: DataTypes.STRING,
+            slug: DataTypes.STRING,
         },
         {
             sequelize,
-            modelName: 'CheckItem',
+            modelName: 'Category',
         },
     );
-    return CheckItem;
+    return Category;
 };

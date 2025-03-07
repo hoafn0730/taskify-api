@@ -4,9 +4,11 @@ import ApiError from '~/utils/ApiError';
 
 const store = async (req, res, next) => {
     const correctCondition = Joi.object({
-        boardId: Joi.number().required(),
-        columnId: Joi.number().required(),
+        senderId: Joi.number().optional(),
+        userId: Joi.number().required(),
         title: Joi.string().required().min(3).max(50).trim().strict(),
+        type: Joi.string().required().min(3).max(50).trim().strict(),
+        status: Joi.string().required().min(3).max(50).trim().strict(),
     });
 
     try {
@@ -20,13 +22,11 @@ const store = async (req, res, next) => {
 
 const update = async (req, res, next) => {
     const correctCondition = Joi.object({
-        boardId: Joi.number(),
-        columnId: Joi.number(),
-        title: Joi.string().min(3).max(50).trim().strict(),
-        description: Joi.string().min(3).trim().strict(),
-        dueDate: Joi.date().allow(null),
-        dueComplete: Joi.boolean().strict(),
-        dueReminder: Joi.number().strict(),
+        senderId: Joi.number().optional(),
+        userId: Joi.number().required(),
+        title: Joi.string().required().min(3).max(50).trim().strict(),
+        type: Joi.string().required().min(3).max(50).trim().strict(),
+        status: Joi.string().required().min(3).max(50).trim().strict(),
     });
 
     try {
@@ -52,7 +52,7 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export const cardValidation = {
+export const categoryValidation = {
     store,
     update,
     destroy,

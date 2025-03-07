@@ -17,11 +17,16 @@ module.exports = (sequelize, DataTypes) => {
     }
     Board.init(
         {
+            workspaceId: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
             title: DataTypes.STRING,
             description: DataTypes.STRING,
             type: DataTypes.STRING,
             slug: DataTypes.STRING,
             image: DataTypes.STRING,
+            shortLink: DataTypes.STRING,
             columnOrderIds: {
                 type: DataTypes.JSON,
                 allowNull: false,

@@ -1,8 +1,13 @@
 const createService = (model) => {
     const methods = {
-        get: async ({ page = 1, pageSize = 10, where, include = [], ...options }) => {
+        get: async ({ page = 1, pageSize = 10, where, include = [], all, ...options }) => {
             try {
                 const skip = (page - 1) * pageSize;
+                if (all) {
+                    const data = await model.findAll({ where, include, ...options });
+                    return data;
+                }
+
                 const { count, rows } = await model.findAndCountAll({
                     where,
                     offset: skip,

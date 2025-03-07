@@ -9,11 +9,11 @@ import exitHook from 'async-exit-hook';
 import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
 
-import db from './config/db';
 import sockets from './sockets';
 import APIs_V1 from './routes/v1';
 import { corsOptions } from './config/cors';
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware';
+import { close, connection } from './models';
 
 const hostname = process.env.HOST || 'localhost';
 const port = process.env.PORT || 8017;
@@ -23,7 +23,11 @@ const io = new Server(httpServer, { cors: corsOptions });
 const swaggerDocs = YAML.load('./swagger.yaml');
 
 io.on('connection', sockets.connection);
-db.connection();
+connection();
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    next();
+});
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(cors(corsOptions));
@@ -56,5 +60,5 @@ httpServer.listen(port, async () => {
 exitHook(() => {
     // eslint-disable-next-line no-console
     console.log('Exiting app');
-    db.close();
+    close();
 });

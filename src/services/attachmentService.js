@@ -1,17 +1,5 @@
-import cloudinary from 'cloudinary';
 import db from '~/models';
-
-cloudinary.v2.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-const opts = {
-    overwrite: true,
-    invalidate: true,
-    resource_type: 'auto',
-};
+import CloudinaryProvider from '~/providers/CloudinaryProvider';
 
 const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
     try {
@@ -47,20 +35,9 @@ const getOne = async (attachmentId) => {
     }
 };
 
-const uploadFile = (file) => {
-    return new Promise((resolve, reject) => {
-        cloudinary.v2.uploader.upload(file, opts, (error, result) => {
-            if (result && result.secure_url) {
-                return resolve(result);
-            }
-            return reject({ message: error.message });
-        });
-    });
-};
-
 const store = async (data) => {
     try {
-        const result = await uploadFile(data.file);
+        const result = await CloudinaryProvider.uploadFile(data.file);
 
         const attachment = await db.Attachment.create({
             ...data,
@@ -106,13 +83,20 @@ const update = async (attachmentId, data) => {
 
 const destroy = async (attachmentId) => {
     try {
-        const attachment = await db.Attachment.destroy({
+        const attachment = await db.Attachment.findOne({
+            where: {
+                id: attachmentId,
+            },
+        });
+        await CloudinaryProvider.deleteFile(attachment.fileUrl);
+
+        const deleted = await db.Attachment.destroy({
             where: {
                 id: attachmentId,
             },
         });
 
-        if (attachment) {
+        if (deleted) {
             return { message: 'Successfully!' };
         }
 

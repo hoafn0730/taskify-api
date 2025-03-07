@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import slugify from 'slugify';
 import { v4 as uuidv4 } from 'uuid';
 import db from '~/models';
@@ -47,6 +48,7 @@ const getOneBySlug = async (slug, archivedAt) => {
         const data = await db.Card.findOne({
             where: { slug: slug, archivedAt: archivedAt || null },
             include: [
+                { model: db.Board, as: 'board', required: false },
                 { model: db.Column, as: 'column', required: false },
                 { model: db.Attachment, as: 'attachments', required: false },
                 { model: db.Attachment, as: 'cover', required: false },
@@ -91,7 +93,12 @@ const getOneBySlug = async (slug, archivedAt) => {
 const store = async (data) => {
     try {
         const [card, created] = await db.Card.findOrCreate({
-            where: { ...data, uuid: uuidv4(), slug: slugify(data.title, { lower: true }) },
+            where: {
+                ...data,
+                uuid: uuidv4(),
+                slug: slugify(data.title, { lower: true }),
+                shortLink: nanoid(8),
+            },
         });
 
         // Update column
@@ -142,4 +149,25 @@ const destroy = async (cardId) => {
     }
 };
 
-export default { get, getOneBySlug, store, update, destroy };
+const updateCover = async (cardId, data) => {
+    try {
+        const updated = await db.Card.update(
+            { image: data.image },
+            {
+                where: {
+                    id: cardId,
+                },
+            },
+        );
+
+        if (updated[0]) {
+            return db.Card.findOne({ where: { id: cardId } });
+        } else {
+            return { message: 'error' };
+        }
+    } catch (error) {
+        throw error;
+    }
+};
+
+export default { get, getOneBySlug, store, update, destroy, updateCover };

@@ -27,6 +27,9 @@ module.exports = {
             slug: {
                 type: Sequelize.STRING,
             },
+            shortLink: {
+                type: Sequelize.STRING,
+            },
             uuid: {
                 type: Sequelize.STRING,
             },
