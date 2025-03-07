@@ -1,6 +1,7 @@
 import { Op } from 'sequelize';
 import { StatusCodes } from 'http-status-codes';
-import { boardService, memberService } from '~/services';
+import { boardService, memberService, workspaceService } from '~/services';
+import db from '~/models';
 
 const get = async (req, res, next) => {
     try {
@@ -46,9 +47,22 @@ const search = async (req, res, next) => {
 };
 
 const getBoardBySlug = async (req, res, next) => {
+    const userId = req.user.id;
+
     try {
         const slug = req.params.slug;
         const board = await boardService.getBoardBySlug(slug);
+
+        const workspace = await workspaceService.getOne({ where: { userId: userId }, raw: true });
+
+        await db.WorkspaceBoard.upsert(
+            {
+                boardId: board.id,
+                workspaceId: workspace.id,
+                lastView: new Date(),
+            },
+            { workspaceId: workspace.id },
+        );
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
@@ -61,14 +75,33 @@ const getBoardBySlug = async (req, res, next) => {
 };
 
 const getCombinedBoards = async (req, res, next) => {
+    const userId = req.user.id;
+
     try {
-        const slug = req.params.slug;
-        const board = await boardService.getBoardBySlug(slug);
+        const workspace = await workspaceService.getOne({
+            where: { userId },
+            include: [
+                {
+                    model: db.Board,
+                    as: 'boards',
+                    through: {
+                        as: 'workspaceBoard',
+                        attributes: ['lastView'],
+                        where: { lastView: { [Op.not]: null } },
+                    },
+                },
+                {
+                    model: db.Board,
+                    as: 'boardStars',
+                    through: { attributes: [], where: { isStarred: true } },
+                },
+            ],
+        });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: board,
+            data: workspace,
         });
     } catch (error) {
         next(error);

@@ -17,8 +17,7 @@ module.exports = (sequelize, DataTypes) => {
             workspaceId: DataTypes.INTEGER,
             boardId: DataTypes.INTEGER,
             isStarred: DataTypes.BOOLEAN,
-            position: DataTypes.INTEGER,
-            lastAccessed: DataTypes.DATE,
+            lastView: DataTypes.DATE,
         },
         {
             sequelize,

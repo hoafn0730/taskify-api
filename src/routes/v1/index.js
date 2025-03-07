@@ -12,8 +12,8 @@ import commentRouter from './commentRouter';
 import notificationRouter from './notificationRouter';
 import workspaceRouter from './workspaceRouter';
 import transactionRouter from './transactionRouter';
+import categoryRouter from './categoryRouter';
 import authMiddleware from '~/middlewares/authMiddleware';
-import boardController from '~/controllers/boardController';
 import { boardService, cardService } from '~/services';
 import ApiError from '~/utils/ApiError';
 
@@ -49,6 +49,7 @@ router.use('/notifications', notificationRouter);
 router.use('/users', userRouter);
 router.use('/workspaces', workspaceRouter);
 router.use('/transactions', transactionRouter);
+router.use('/categories', categoryRouter);
 
 router.get('/get-by-short-link', async (req, res, next) => {
     const shortLink = req.query.shortLink;
@@ -74,7 +75,5 @@ router.get('/get-by-short-link', async (req, res, next) => {
         data: data,
     });
 });
-
-router.get('/combined-boards', boardController.getCombinedBoards);
 
 export default router;

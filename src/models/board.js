@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
     }
     Board.init(
         {
+            workspaceId: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
             title: DataTypes.STRING,
             description: DataTypes.STRING,
             type: DataTypes.STRING,

@@ -4,33 +4,9 @@ import { nanoid } from 'nanoid';
 import db from '~/models';
 import columnService from './columnService';
 import cardService from './cardService';
-import googleAIGenerate from './googleAiService';
 import { mapOrder } from '~/utils/sorts';
 import CloudinaryProvider from '~/providers/CloudinaryProvider';
-
-const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
-    try {
-        const skip = (page - 1) * pageSize;
-        const { count, rows } = await db.Board.findAndCountAll({
-            where: where,
-            offset: skip,
-            limit: pageSize,
-            distinct: true,
-            ...options,
-        });
-
-        return {
-            meta: {
-                page,
-                pageSize,
-                total: count,
-            },
-            data: rows,
-        };
-    } catch (error) {
-        throw error;
-    }
-};
+import GeminiProvider from '~/providers/GeminiProvider';
 
 const getBoardBySlug = async (slug) => {
     try {
@@ -148,7 +124,7 @@ const moveCardToDifferentColumn = async (data) => {
 const generate = async (content) => {
     try {
         // * B1: Tao content tu goi y
-        const data = await googleAIGenerate(content);
+        const data = await GeminiProvider.googleAIGenerate(content);
 
         // * B2: Tao board tu content da tao
         // * Tao board
@@ -239,7 +215,6 @@ const updateBackground = async (boardId, data) => {
 };
 
 export default {
-    get,
     getBoardBySlug,
     store,
     update,

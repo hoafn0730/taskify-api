@@ -133,4 +133,4 @@ const googleAIGenerate = async (content) => {
     return JSON.parse(result.response.text());
 };
 
-export default googleAIGenerate;
+export default { googleAIGenerate };

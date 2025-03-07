@@ -17,7 +17,7 @@ export const errorHandlingMiddleware = (err, req, res, next) => {
     // ...
 
     // eslint-disable-next-line no-console
-    // console.log('🚀 ~ errorHandlingMiddleware ~ responseError:', responseError);
+    console.log('🚀 ~ responseError:', responseError);
 
     // Trả responseError về phía Front-end
     return res.status(responseError.statusCode).json(responseError);

@@ -11,14 +11,14 @@ const checkMemberRole = (...roles) => {
             }
 
             let boardId = null;
-            const board = await boardService.getOne({ where: req.params });
-            if (board) {
-                boardId = board.id;
-            } else {
+            if (req.baseUrl.includes('card')) {
                 const card = await cardService.getOne({
                     where: req.params,
                 });
                 boardId = card.boardId;
+            } else if (req.baseUrl.includes('board')) {
+                const board = await boardService.getOne({ where: req.params });
+                boardId = board.id;
             }
 
             if (!boardId) {

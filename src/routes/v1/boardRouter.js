@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.get('/', boardController.get);
 router.get('/search', boardController.search);
+router.get('/combined', boardController.getCombinedBoards);
 router.get('/:slug', boardMiddleware.checkMemberRole('member', 'admin', 'owner'), boardController.getBoardBySlug);
 router.post('/', boardValidation.store, boardController.store);
 router.post('/generate', boardController.generate);
