@@ -56,17 +56,12 @@ router.get('/get-by-short-link', async (req, res, next) => {
     const type = req.query.type;
 
     let data;
-    switch (type) {
-        case 'board': {
-            data = await boardService.getOne({ where: { shortLink } });
-            break;
-        }
-        case 'card': {
-            data = await cardService.getOne({ where: { shortLink } });
-            break;
-        }
-        default:
-            return next(ApiError(StatusCodes.NOT_FOUND, 'NOT_FOUND'));
+    if (type === 'board') {
+        data = await boardService.getOne({ where: { shortLink } });
+    } else if (type === 'card') {
+        data = await cardService.getOne({ where: { shortLink } });
+    } else {
+        return next(ApiError(StatusCodes.NOT_FOUND, 'NOT_FOUND'));
     }
 
     res.status(StatusCodes.OK).json({
