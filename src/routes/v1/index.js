@@ -13,6 +13,7 @@ import notificationRouter from './notificationRouter';
 import workspaceRouter from './workspaceRouter';
 import transactionRouter from './transactionRouter';
 import categoryRouter from './categoryRouter';
+import authRouter from './authRouter';
 import authMiddleware from '~/middlewares/authMiddleware';
 import { boardService, cardService } from '~/services';
 import ApiError from '~/utils/ApiError';
@@ -37,6 +38,8 @@ router.post('/webhook/seapay', (req, res) => {
     res.status(200).json({ success: true, data });
 });
 
+router.use('/auth', authRouter);
+
 router.all('*', authMiddleware.isAuthorized);
 router.use('/boards', boardRouter);
 router.use('/columns', columnRouter);
@@ -56,17 +59,12 @@ router.get('/get-by-short-link', async (req, res, next) => {
     const type = req.query.type;
 
     let data;
-    switch (type) {
-        case 'board': {
-            data = await boardService.getOne({ where: { shortLink } });
-            break;
-        }
-        case 'card': {
-            data = await cardService.getOne({ where: { shortLink } });
-            break;
-        }
-        default:
-            return next(ApiError(StatusCodes.NOT_FOUND, 'NOT_FOUND'));
+    if (type === 'board') {
+        data = await boardService.getOne({ where: { shortLink } });
+    } else if (type === 'card') {
+        data = await cardService.getOne({ where: { shortLink } });
+    } else {
+        return next(ApiError(StatusCodes.NOT_FOUND, 'NOT_FOUND'));
     }
 
     res.status(StatusCodes.OK).json({

@@ -1,17 +1,16 @@
 import { StatusCodes } from 'http-status-codes';
-import { notificationService } from '~/services';
+import { categoryService } from '~/services';
 
 const get = async (req, res, next) => {
     try {
         const page = req.query.page;
         const pageSize = req.query.pageSize;
-        const notifications = await notificationService.get({ page, pageSize });
+        const categories = await categoryService.get({ page, pageSize, all: true });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            meta: notifications.meta,
-            data: notifications.data,
+            data: categories,
         });
     } catch (error) {
         next(error);
@@ -20,13 +19,13 @@ const get = async (req, res, next) => {
 
 const getOne = async (req, res, next) => {
     try {
-        const notificationId = req.params.id;
-        const notification = await notificationService.getOne({ where: { id: notificationId } });
+        const categoryId = req.params.id;
+        const category = await categoryService.getOne({ where: { id: categoryId } });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: notification,
+            data: category,
         });
     } catch (error) {
         next(error);
@@ -35,7 +34,7 @@ const getOne = async (req, res, next) => {
 
 const store = async (req, res, next) => {
     try {
-        const notification = await notificationService.store(req.body);
+        const category = await categoryService.store(req.body);
 
         res.io.emit('notification', {
             message: 'hello',
@@ -44,7 +43,7 @@ const store = async (req, res, next) => {
         res.status(StatusCodes.CREATED).json({
             statusCode: StatusCodes.CREATED,
             message: StatusCodes[StatusCodes.CREATED],
-            data: notification,
+            data: category,
         });
     } catch (error) {
         next(error);
@@ -53,9 +52,9 @@ const store = async (req, res, next) => {
 
 const update = async (req, res, next) => {
     try {
-        const notificationId = req.params.id;
+        const categoryId = req.params.id;
 
-        const updated = await notificationService.update(notificationId, req.body);
+        const updated = await categoryService.update(categoryId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
@@ -69,9 +68,9 @@ const update = async (req, res, next) => {
 
 const destroy = async (req, res, next) => {
     try {
-        const notificationId = req.params.id;
+        const categoryId = req.params.id;
 
-        const deleted = await notificationService.destroy(notificationId);
+        const deleted = await categoryService.destroy(categoryId);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
