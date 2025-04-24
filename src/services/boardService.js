@@ -1,12 +1,55 @@
 import slugify from 'slugify';
 import { v4 as uuidv4 } from 'uuid';
 import { nanoid } from 'nanoid';
+import _ from 'lodash';
+
 import db from '~/models';
 import columnService from './columnService';
 import cardService from './cardService';
 import { mapOrder } from '~/utils/sorts';
 import CloudinaryProvider from '~/providers/CloudinaryProvider';
 import GeminiProvider from '~/providers/GeminiProvider';
+
+// const getBoardBySlug = async (slug) => {
+//     try {
+//         const data = await db.Board.findOne({
+//             where: { slug },
+//             include: [
+//                 {
+//                     model: db.Column,
+//                     as: 'columns',
+//                     include: {
+//                         model: db.Card,
+//                         as: 'cards',
+//                         include: [
+//                             { model: db.Attachment, as: 'cover' },
+//                             { model: db.Attachment, as: 'attachments' },
+//                             {
+//                                 model: db.Checklist,
+//                                 as: 'checklists',
+//                                 include: [
+//                                     {
+//                                         model: db.CheckItem,
+//                                         as: 'checkItems',
+//                                     },
+//                                 ],
+//                             },
+//                         ],
+//                     },
+//                 },
+//                 {
+//                     model: db.Member,
+//                     as: 'members',
+//                     include: { model: db.User, as: 'user' },
+//                 },
+//             ],
+//         });
+//
+//         return data;
+//     } catch (error) {
+//         throw error;
+//     }
+// };
 
 const getBoardBySlug = async (slug) => {
     try {
@@ -16,24 +59,6 @@ const getBoardBySlug = async (slug) => {
                 {
                     model: db.Column,
                     as: 'columns',
-                    include: {
-                        model: db.Card,
-                        as: 'cards',
-                        include: [
-                            { model: db.Attachment, as: 'cover' },
-                            { model: db.Attachment, as: 'attachments' },
-                            {
-                                model: db.Checklist,
-                                as: 'checklists',
-                                include: [
-                                    {
-                                        model: db.CheckItem,
-                                        as: 'checkItems',
-                                    },
-                                ],
-                            },
-                        ],
-                    },
                 },
                 {
                     model: db.Member,
@@ -43,7 +68,37 @@ const getBoardBySlug = async (slug) => {
             ],
         });
 
-        return data;
+        const cards = await db.Card.findAll({
+            where: { boardId: data.id },
+            include: [
+                { model: db.Attachment, as: 'cover' },
+                { model: db.Attachment, as: 'attachments' },
+                { model: db.Comment, as: 'comments' },
+                { model: db.Member, as: 'assignee' },
+                {
+                    model: db.Checklist,
+                    as: 'checklists',
+                    include: [
+                        {
+                            model: db.CheckItem,
+                            as: 'checkItems',
+                        },
+                    ],
+                },
+            ],
+        });
+
+        // Tạo map từ columnId -> columnUUID
+        const columnIdToUUIDMap = Object.fromEntries(data.columns.map((col) => [col.id, col.uuid]));
+
+        // Group cards theo columnUUID
+        const cardsByColumnUUID = _.groupBy(cards, (card) => columnIdToUUIDMap[card.columnId]);
+
+        // Gán vào data với key là tasks
+        const plainData = data.toJSON();
+        plainData.tasks = cardsByColumnUUID;
+
+        return plainData;
     } catch (error) {
         throw error;
     }

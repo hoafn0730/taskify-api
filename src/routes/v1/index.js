@@ -13,6 +13,7 @@ import notificationRouter from './notificationRouter';
 import workspaceRouter from './workspaceRouter';
 import transactionRouter from './transactionRouter';
 import categoryRouter from './categoryRouter';
+import authRouter from './authRouter';
 import authMiddleware from '~/middlewares/authMiddleware';
 import { boardService, cardService } from '~/services';
 import ApiError from '~/utils/ApiError';
@@ -36,6 +37,8 @@ router.post('/webhook/seapay', (req, res) => {
     // Phản hồi lại Seapay
     res.status(200).json({ success: true, data });
 });
+
+router.use('/auth', authRouter);
 
 router.all('*', authMiddleware.isAuthorized);
 router.use('/boards', boardRouter);

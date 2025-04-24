@@ -47,22 +47,22 @@ const search = async (req, res, next) => {
 };
 
 const getBoardBySlug = async (req, res, next) => {
-    const userId = req.user.id;
+    // const userId = req.user.id;
 
     try {
         const slug = req.params.slug;
         const board = await boardService.getBoardBySlug(slug);
 
-        const workspace = await workspaceService.getOne({ where: { userId: userId }, raw: true });
+        // const workspace = await workspaceService.getOne({ where: { userId: userId }, raw: true });
 
-        await db.WorkspaceBoard.upsert(
-            {
-                boardId: board.id,
-                workspaceId: workspace.id,
-                lastView: new Date(),
-            },
-            { workspaceId: workspace.id },
-        );
+        // await db.WorkspaceBoard.upsert(
+        //     {
+        //         boardId: board.id,
+        //         workspaceId: workspace.id,
+        //         lastView: new Date(),
+        //     },
+        //     { workspaceId: workspace.id },
+        // );
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
