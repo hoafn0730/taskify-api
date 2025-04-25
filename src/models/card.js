@@ -15,6 +15,8 @@ module.exports = (sequelize, DataTypes) => {
             this.hasMany(models.Checklist, { foreignKey: 'cardId', as: 'checklists' });
             this.hasMany(models.Attachment, { foreignKey: 'cardId', as: 'attachments' });
             this.hasMany(models.Comment, { foreignKey: 'commentableId', as: 'comments' });
+
+            this.hasMany(models.Member, { foreignKey: 'objectId', as: 'assignee' });
         }
     }
     Card.init(
@@ -27,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
             slug: { type: DataTypes.STRING, unique: true },
             shortLink: DataTypes.STRING,
             uuid: DataTypes.STRING,
+            dueStart: DataTypes.DATE,
             dueDate: DataTypes.DATE,
             dueComplete: DataTypes.BOOLEAN,
             dueReminder: DataTypes.INTEGER,
