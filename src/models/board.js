@@ -12,7 +12,11 @@ module.exports = (sequelize, DataTypes) => {
             this.hasMany(models.Column, { foreignKey: 'boardId', as: 'columns' });
             this.hasMany(models.Member, { foreignKey: 'objectId', as: 'members' });
             this.hasMany(models.WorkspaceBoard, { foreignKey: 'boardId', onDelete: 'CASCADE' });
-            this.belongsToMany(models.Workspace, { through: models.WorkspaceBoard, foreignKey: 'boardId' });
+            this.belongsToMany(models.Workspace, {
+                through: models.WorkspaceBoard, // Bảng trung gian
+                foreignKey: 'boardId',
+                as: 'workspaces',
+            });
         }
     }
     Board.init(

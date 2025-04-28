@@ -112,13 +112,13 @@ const store = async (req, res, next) => {
     try {
         const board = await boardService.store(req.body);
 
-        await memberService.store({
-            userId: req.user.id,
-            objectId: board.id,
-            objectType: 'board',
-            role: 'owner',
-            active: true,
-        });
+        // await memberService.store({
+        //     userId: req.user.id,
+        //     objectId: board.id,
+        //     objectType: 'board',
+        //     role: 'owner',
+        //     active: true,
+        // });
 
         res.status(StatusCodes.CREATED).json({
             statusCode: StatusCodes.CREATED,

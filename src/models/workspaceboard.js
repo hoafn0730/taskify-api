@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         {
             workspaceId: DataTypes.INTEGER,
             boardId: DataTypes.INTEGER,
-            isStarred: DataTypes.BOOLEAN,
+            starred: { type: DataTypes.BOOLEAN, defaultValue: false },
             lastView: DataTypes.DATE,
         },
         {
