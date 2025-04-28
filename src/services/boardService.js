@@ -71,7 +71,12 @@ const getBoardBySlug = async (slug) => {
 const store = async (data) => {
     try {
         const [board, created] = await db.Board.findOrCreate({
-            where: { ...data, slug: slugify(data.title, { lower: true }), shortLink: nanoid(8) },
+            where: {
+                ...data,
+                slug: slugify(data.title, { lower: true }),
+                shortLink: nanoid(8),
+                workspaceId: data.workspaceId || 1,
+            },
         });
 
         if (!created) {
