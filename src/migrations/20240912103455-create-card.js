@@ -19,19 +19,23 @@ module.exports = {
                 type: Sequelize.STRING,
             },
             description: {
-                type: Sequelize.STRING,
+                type: Sequelize.TEXT,
             },
             image: {
                 type: Sequelize.STRING,
             },
             slug: {
                 type: Sequelize.STRING,
+                unique: true,
             },
             shortLink: {
                 type: Sequelize.STRING,
             },
             uuid: {
                 type: Sequelize.STRING,
+            },
+            dueStart: {
+                type: Sequelize.DATE,
             },
             dueDate: {
                 type: Sequelize.DATE,
@@ -52,6 +56,10 @@ module.exports = {
             },
             updatedAt: {
                 allowNull: false,
+                type: Sequelize.DATE,
+            },
+            deletedAt: {
+                allowNull: true,
                 type: Sequelize.DATE,
             },
         });

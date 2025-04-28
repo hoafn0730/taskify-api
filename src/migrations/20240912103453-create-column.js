@@ -15,12 +15,27 @@ module.exports = {
             title: {
                 type: Sequelize.STRING,
             },
+            slug: {
+                type: Sequelize.STRING,
+            },
+            uuid: {
+                type: Sequelize.STRING,
+            },
+            cardOrderIds: {
+                type: Sequelize.JSON,
+                allowNull: false,
+                defaultValue: [],
+            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,
             },
             updatedAt: {
                 allowNull: false,
+                type: Sequelize.DATE,
+            },
+            deletedAt: {
+                allowNull: true,
                 type: Sequelize.DATE,
             },
         });
