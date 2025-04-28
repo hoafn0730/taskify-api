@@ -10,47 +10,6 @@ import { mapOrder } from '~/utils/sorts';
 import CloudinaryProvider from '~/providers/CloudinaryProvider';
 import GeminiProvider from '~/providers/GeminiProvider';
 
-// const getBoardBySlug = async (slug) => {
-//     try {
-//         const data = await db.Board.findOne({
-//             where: { slug },
-//             include: [
-//                 {
-//                     model: db.Column,
-//                     as: 'columns',
-//                     include: {
-//                         model: db.Card,
-//                         as: 'cards',
-//                         include: [
-//                             { model: db.Attachment, as: 'cover' },
-//                             { model: db.Attachment, as: 'attachments' },
-//                             {
-//                                 model: db.Checklist,
-//                                 as: 'checklists',
-//                                 include: [
-//                                     {
-//                                         model: db.CheckItem,
-//                                         as: 'checkItems',
-//                                     },
-//                                 ],
-//                             },
-//                         ],
-//                     },
-//                 },
-//                 {
-//                     model: db.Member,
-//                     as: 'members',
-//                     include: { model: db.User, as: 'user' },
-//                 },
-//             ],
-//         });
-//
-//         return data;
-//     } catch (error) {
-//         throw error;
-//     }
-// };
-
 const getBoardBySlug = async (slug) => {
     try {
         const data = await db.Board.findOne({
@@ -96,7 +55,12 @@ const getBoardBySlug = async (slug) => {
 
         // Gán vào data với key là tasks
         const plainData = data.toJSON();
-        plainData.tasks = cardsByColumnUUID;
+        // Đảm bảo column nào cũng có array (kể cả column không có card)
+        plainData.tasks = {};
+        for (const col of data.columns) {
+            const columnUUID = col.uuid;
+            plainData.tasks[columnUUID] = cardsByColumnUUID[columnUUID] || [];
+        }
 
         return plainData;
     } catch (error) {

@@ -15,10 +15,15 @@ router.get(
 );
 router.post('/', boardValidation.store, boardController.store);
 router.post('/generate', boardController.generate);
-router.put('/:id', boardMiddleware.checkMemberRole('admin', 'owner'), boardValidation.update, boardController.update);
+router.put(
+    '/:id',
+    //  boardMiddleware.checkMemberRole('admin', 'owner'),
+    boardValidation.update,
+    boardController.update,
+);
 router.put(
     '/:id/moving-card',
-    boardMiddleware.checkMemberRole('admin', 'owner'),
+    // boardMiddleware.checkMemberRole('admin', 'owner'),
     boardValidation.moveCardToDifferentColumn,
     boardController.moveCardToDifferentColumn,
 );
