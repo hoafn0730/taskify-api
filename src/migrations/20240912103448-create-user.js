@@ -9,13 +9,18 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER,
             },
+
             uid: {
                 type: Sequelize.STRING,
+                unique: true,
             },
             username: {
                 type: Sequelize.STRING,
             },
             email: {
+                type: Sequelize.STRING,
+            },
+            password: {
                 type: Sequelize.STRING,
             },
             fullName: {
@@ -24,12 +29,23 @@ module.exports = {
             avatar: {
                 type: Sequelize.STRING,
             },
+            type: {
+                type: Sequelize.STRING,
+            },
+            role: {
+                type: Sequelize.STRING,
+            },
+
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,
             },
             updatedAt: {
                 allowNull: false,
+                type: Sequelize.DATE,
+            },
+            deletedAt: {
+                allowNull: true,
                 type: Sequelize.DATE,
             },
         });

@@ -9,6 +9,10 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER,
             },
+            workspaceId: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+            },
             title: {
                 type: Sequelize.STRING,
             },
@@ -27,12 +31,21 @@ module.exports = {
             shortLink: {
                 type: Sequelize.STRING,
             },
+            columnOrderIds: {
+                type: Sequelize.JSON,
+                allowNull: false,
+                defaultValue: [],
+            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,
             },
             updatedAt: {
                 allowNull: false,
+                type: Sequelize.DATE,
+            },
+            deletedAt: {
+                allowNull: true,
                 type: Sequelize.DATE,
             },
         });

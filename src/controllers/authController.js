@@ -18,6 +18,20 @@ const signIn = async (req, res, next) => {
         const body = req.body;
         const resData = await authService.signIn({ email: body.email, password: body.password });
 
+        // Tìm hoặc tạo workspace
+        const [workspace, created] = await db.Workspace.findOrCreate({
+            where: { userId: resData.id },
+            defaults: {
+                title: `${resData.username}'s Workspace`, // Tên mặc định cho workspace
+                type: 'personal', // Loại workspace (có thể thay đổi nếu cần)
+            },
+        });
+
+        if (created) {
+            console.log('New workspace created:', workspace.title);
+        }
+
+        //
         // await authService.updateUserCode(req.user.type, req.user.email, refreshToken);
 
         // Đặt Access Token vào cookie
@@ -41,7 +55,7 @@ const signIn = async (req, res, next) => {
         return res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: 'login success',
-            data: resData,
+            data: { ...resData, workspace },
         });
     } catch (error) {
         next(error);

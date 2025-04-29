@@ -10,14 +10,9 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             this.hasMany(models.WorkspaceBoard, { foreignKey: 'workspaceId', onDelete: 'CASCADE' });
             this.belongsToMany(models.Board, {
-                through: models.WorkspaceBoard,
+                through: models.WorkspaceBoard, // Bảng trung gian
                 foreignKey: 'workspaceId',
                 as: 'boards',
-            });
-            this.belongsToMany(models.Board, {
-                through: models.WorkspaceBoard,
-                foreignKey: 'workspaceId',
-                as: 'boardStars',
             });
         }
     }

@@ -70,13 +70,33 @@ const getBoardBySlug = async (slug) => {
 
 const store = async (data) => {
     try {
+        // Tạo board mới
         const [board, created] = await db.Board.findOrCreate({
-            where: { ...data, slug: slugify(data.title, { lower: true }), shortLink: nanoid(8) },
+            where: {
+                ...data,
+                slug: slugify(data.title, { lower: true }),
+                shortLink: nanoid(8),
+            },
         });
 
         if (!created) {
-            return { message: 'Instance was exist!' };
+            return { message: 'Instance already exists!' };
         }
+
+        // Lấy workspace tương ứng
+        const workspace = await db.Workspace.findByPk(data.workspaceId);
+
+        if (!workspace) {
+            throw new Error('Workspace not found');
+        }
+
+        // Thêm board vào workspace (tự động thêm vào bảng WorkspaceBoard)
+        await workspace.addBoard(board, {
+            through: {
+                starred: false, // Giá trị mặc định
+                lastView: new Date(), // Giá trị mặc định
+            },
+        });
 
         return board;
     } catch (error) {
