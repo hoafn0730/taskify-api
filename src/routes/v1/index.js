@@ -14,6 +14,7 @@ import workspaceRouter from './workspaceRouter';
 import transactionRouter from './transactionRouter';
 import categoryRouter from './categoryRouter';
 import authRouter from './authRouter';
+import mailRouter from './mailRouter';
 import authMiddleware from '~/middlewares/authMiddleware';
 import { boardService, cardService } from '~/services';
 import ApiError from '~/utils/ApiError';
@@ -40,7 +41,8 @@ router.post('/webhook/seapay', (req, res) => {
 
 router.use('/auth', authRouter);
 
-router.all('*', authMiddleware.isAuthorized);
+// router.all('*', authMiddleware.isAuthorized);
+
 router.use('/boards', boardRouter);
 router.use('/columns', columnRouter);
 router.use('/cards', cardRouter);
@@ -53,6 +55,7 @@ router.use('/users', userRouter);
 router.use('/workspaces', workspaceRouter);
 router.use('/transactions', transactionRouter);
 router.use('/categories', categoryRouter);
+router.use('/mails', mailRouter);
 
 router.get('/get-by-short-link', async (req, res, next) => {
     const shortLink = req.query.shortLink;

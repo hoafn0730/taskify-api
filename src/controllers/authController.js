@@ -87,17 +87,17 @@ const signUp = async (req, res, next) => {
     }
 };
 
-const logout = async (req, res, next) => {
-    req.logout((err) => {
-        if (err) return next(err);
-        //
-        res.clearCookie('accessToken', { domain: process.env.COOKIE_DOMAIN });
-        res.clearCookie('refreshToken', { domain: process.env.COOKIE_DOMAIN });
-        res.clearCookie('connect.sid', { domain: process.env.COOKIE_DOMAIN });
-        req.session.destroy();
+const signOut = async (req, res, next) => {
+    res.clearCookie('accessToken', { domain: process.env.COOKIE_DOMAIN });
+    res.clearCookie('refreshToken', { domain: process.env.COOKIE_DOMAIN });
+    res.clearCookie('connect.sid', { domain: process.env.COOKIE_DOMAIN });
+    // req.session.destroy();
 
-        res.json({ statusCode: StatusCodes.OK, message: StatusCodes[StatusCodes.OK] });
-    });
+    res.json({ statusCode: StatusCodes.OK, message: StatusCodes[StatusCodes.OK] });
+    // req.logout((err) => {
+    //     if (err) return next(err);
+    //     //
+    // });
 };
 
 const refreshToken = async (req, res, next) => {
@@ -194,7 +194,7 @@ const verifyAccount = async (req, res, next) => {
 export const authController = {
     signIn,
     signUp,
-    logout,
+    signOut,
     refreshToken,
     getCurrentUser,
     verifyAccount,

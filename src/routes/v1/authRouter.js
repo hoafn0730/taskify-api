@@ -11,7 +11,7 @@ router.post('/sign-in', authValidation.signIn, authController.signIn);
 // router.post('/verify', authMiddleware.isAuthorized, authController.verifyServices);
 // router.post('/refresh-token', authController.refreshToken);
 // router.patch('/verify-account', authValidation.verifyAccount, authController.verifyAccount);
-// router.delete('/logout', authController.logout);
+router.delete('/sign-out', authController.signOut);
 
 // GET /auth/google
 // router.get('/google', (req, res, next) => {
