@@ -1,6 +1,10 @@
 import express from 'express';
 import { StatusCodes } from 'http-status-codes';
 
+import authMiddleware from '~/middlewares/authMiddleware';
+import { boardService, cardService } from '~/services';
+import ApiError from '~/utils/ApiError';
+
 import boardRouter from './boardRouter';
 import columnRouter from './columnRouter';
 import cardRouter from './cardRouter';
@@ -15,9 +19,7 @@ import transactionRouter from './transactionRouter';
 import categoryRouter from './categoryRouter';
 import authRouter from './authRouter';
 import mailRouter from './mailRouter';
-import authMiddleware from '~/middlewares/authMiddleware';
-import { boardService, cardService } from '~/services';
-import ApiError from '~/utils/ApiError';
+import chatRouter from './chatRouter';
 
 const router = express.Router();
 
@@ -56,6 +58,7 @@ router.use('/workspaces', workspaceRouter);
 router.use('/transactions', transactionRouter);
 router.use('/categories', categoryRouter);
 router.use('/mails', mailRouter);
+router.use('/chat', chatRouter);
 
 router.get('/get-by-short-link', async (req, res, next) => {
     const shortLink = req.query.shortLink;

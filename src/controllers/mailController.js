@@ -9,8 +9,8 @@ import { mailService } from '~/services';
 const transporter = nodemailer.createTransport({
     service: 'gmail', // hoặc smtp riêng nếu bạn có
     auth: {
-        user: process.env.MAIL_USER, // email gửi
-        pass: process.env.MAIL_PASS, // mật khẩu ứng dụng
+        user: 'hoantran0730@gmail.com', // email gửi
+        pass: 'process.env.MAIL_PASS', // mật khẩu ứng dụng
     },
 });
 
@@ -77,22 +77,20 @@ const save = async (req, res, next) => {
 
 const send = async (req, res, next) => {
     try {
-        const { to, subject, html, mailId } = req.body;
+        // const { to, subject, html, mailId } = req.body;
 
-        if (!to || !subject || !html) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                message: 'Thiếu thông tin gửi mail',
-            });
-        }
+        const to = 'hoantran0730@gmail.com';
+        const subject = 'Chào bạn!';
+        const html = '<h1>Cảm ơn bạn đã đăng ký</h1>';
 
         const info = await transporter.sendMail({
-            from: `"MyApp" <${process.env.MAIL_USER}>`,
+            from: `"MyApp" <${'hoantran0730@gmail.com'}>`,
             to,
             subject,
             html,
         });
 
-        await db.Mail.update({ type: 'sent' }, { where: { id: mailId } });
+        // await db.Mail.update({ type: 'sent' }, { where: { id: mailId } });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,

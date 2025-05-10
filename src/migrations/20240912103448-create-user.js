@@ -23,7 +23,13 @@ module.exports = {
             password: {
                 type: Sequelize.STRING,
             },
-            fullName: {
+            displayName: {
+                type: Sequelize.STRING,
+            },
+            phoneNumber: {
+                type: Sequelize.STRING,
+            },
+            address: {
                 type: Sequelize.STRING,
             },
             avatar: {
@@ -35,7 +41,13 @@ module.exports = {
             role: {
                 type: Sequelize.STRING,
             },
-
+            status: {
+                type: Sequelize.STRING,
+            },
+            lastActivity: {
+                allowNull: true,
+                type: Sequelize.DATE,
+            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,

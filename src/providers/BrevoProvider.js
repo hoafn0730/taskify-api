@@ -4,12 +4,15 @@ const apiInstance = new brevo.TransactionalEmailsApi();
 const apiKey = apiInstance.authentications['apiKey'];
 apiKey.apiKey = process.env.BREVO_API_KEY;
 
-const sendEmail = (email, subject, htmlContent) => {
+const sendEmail = ({ email, sender, subject, htmlContent }) => {
     let sendSmtpEmail = new brevo.SendSmtpEmail();
 
     sendSmtpEmail.subject = subject;
     sendSmtpEmail.htmlContent = htmlContent;
-    sendSmtpEmail.sender = { name: process.env.ADMIN_EMAIL_NAME, email: process.env.ADMIN_EMAIL_ADDRESS };
+    sendSmtpEmail.sender = {
+        name: sender?.name || process.env.ADMIN_EMAIL_NAME,
+        email: sender?.email || process.env.ADMIN_EMAIL_ADDRESS,
+    };
     sendSmtpEmail.to = [{ email: email }];
 
     // sendSmtpEmail.replyTo = { email: 'shubham.upadhyay@sendinblue.com', name: 'Shubham Upadhyay' };

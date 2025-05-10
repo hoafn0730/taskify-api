@@ -83,23 +83,25 @@ const store = async (data) => {
             return { message: 'Instance already exists!' };
         }
 
+        // [ ]: workspace
         // Lấy workspace tương ứng
-        const workspace = await db.Workspace.findByPk(data.workspaceId);
-
-        if (!workspace) {
-            throw new Error('Workspace not found');
-        }
-
-        // Thêm board vào workspace (tự động thêm vào bảng WorkspaceBoard)
-        await workspace.addBoard(board, {
-            through: {
-                starred: false, // Giá trị mặc định
-                lastView: new Date(), // Giá trị mặc định
-            },
-        });
+        //         const workspace = await db.Workspace.findByPk(data.workspaceId);
+        //
+        //         if (!workspace) {
+        //             throw new Error('Workspace not found');
+        //         }
+        //
+        //         // Thêm board vào workspace (tự động thêm vào bảng WorkspaceBoard)
+        //         await workspace.addBoard(board, {
+        //             through: {
+        //                 starred: false, // Giá trị mặc định
+        //                 lastView: new Date(), // Giá trị mặc định
+        //             },
+        //         });
 
         return board;
     } catch (error) {
+        console.log('🚀 ~ store ~ error:', error);
         throw error;
     }
 };

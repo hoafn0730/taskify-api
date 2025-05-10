@@ -2,7 +2,9 @@ const createService = (model) => {
     const methods = {
         get: async ({ page = 1, pageSize = 10, where, include = [], all, ...options }) => {
             try {
-                const skip = (page - 1) * pageSize;
+                const _page = +page;
+                const _pageSize = +pageSize;
+                const skip = (_page - 1) * _pageSize;
                 if (all) {
                     const data = await model.findAll({ where, include, ...options });
                     return data;
@@ -11,7 +13,7 @@ const createService = (model) => {
                 const { count, rows } = await model.findAndCountAll({
                     where,
                     offset: skip,
-                    limit: pageSize,
+                    limit: _pageSize,
                     distinct: true,
                     include,
                     ...options,
@@ -19,8 +21,8 @@ const createService = (model) => {
 
                 return {
                     meta: {
-                        page,
-                        pageSize,
+                        page: _page,
+                        pageSize: _pageSize,
                         total: count,
                     },
                     data: rows,
