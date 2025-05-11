@@ -31,6 +31,9 @@ module.exports = {
             shortLink: {
                 type: Sequelize.STRING,
             },
+            tags: {
+                type: Sequelize.STRING,
+            },
             columnOrderIds: {
                 type: Sequelize.JSON,
                 allowNull: false,

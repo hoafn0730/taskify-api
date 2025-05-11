@@ -10,27 +10,35 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             // define association here
             this.hasMany(models.Column, { foreignKey: 'boardId', as: 'columns' });
-            this.hasMany(models.Member, { foreignKey: 'objectId', as: 'members' });
+
             this.hasMany(models.WorkspaceBoard, { foreignKey: 'boardId', onDelete: 'CASCADE' });
             this.belongsToMany(models.Workspace, {
                 through: models.WorkspaceBoard, // Bảng trung gian
                 foreignKey: 'boardId',
                 as: 'workspaces',
             });
+
+            this.belongsToMany(models.User, {
+                through: {
+                    model: models.Member,
+                    scope: { objectType: 'board' },
+                },
+                foreignKey: 'objectId',
+                otherKey: 'userId',
+                constraints: false,
+                as: 'members',
+            });
         }
     }
     Board.init(
         {
-            // workspaceId: {
-            //     type: DataTypes.INTEGER,
-            //     allowNull: false,
-            // },
             title: DataTypes.STRING,
             description: DataTypes.STRING,
             type: DataTypes.STRING,
             slug: DataTypes.STRING,
             image: DataTypes.STRING,
             shortLink: DataTypes.STRING,
+            tags: DataTypes.STRING,
             columnOrderIds: {
                 type: DataTypes.JSON,
                 allowNull: false,

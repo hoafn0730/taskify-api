@@ -1,9 +1,10 @@
 // const passport = require('passport');
 import uuidv4 from 'uuid';
 import ms from 'ms';
+import { StatusCodes } from 'http-status-codes';
+import { Op } from 'sequelize';
 
 import { authService } from '~/services/authService';
-import { StatusCodes } from 'http-status-codes';
 import ApiError from '~/utils/ApiError';
 import db from '~/models';
 import { JwtProvider } from '~/providers/JwtProvider';
@@ -156,9 +157,45 @@ const getCurrentUser = async (req, res, next) => {
                 username: req.user.username,
                 email: req.user.email,
             },
-            attributes: { exclude: ['password', 'type', 'code'] },
-            raw: true,
+            attributes: { exclude: ['password', 'type', 'code', 'role', 'createdAt', 'updatedAt', 'deletedAt'] },
+            include: [
+                {
+                    model: db.User,
+                    as: 'friends',
+                    attributes: {
+                        exclude: ['password', 'type', 'code', 'role', 'createdAt', 'updatedAt', 'deletedAt'],
+                    },
+                    through: {
+                        attributes: [],
+                        where: { status: { [Op.in]: ['accepted', 'pending'] } },
+                    },
+                },
+                // {
+                //     model: db.User,
+                //     as: 'friendOf',
+                //     attributes: {
+                //         exclude: ['password', 'type', 'code'],
+                //     },
+                //     through: {
+                //         attributes: [],
+                //         where: { status: 'accepted' },
+                //     },
+                // },
+            ],
         });
+
+        // online, offline, alway, busy
+        // [ ] sau 30p se set lai offline new lastActivity > 15p
+        await db.User.update(
+            { lastActivity: new Date(), status: 'online' },
+            {
+                where: {
+                    id: req.user.id,
+                    username: req.user.username,
+                    email: req.user.email,
+                },
+            },
+        );
 
         if (user.require2FA) {
             user.is2FAVerified = req.session.passport.user.is2FAVerified;

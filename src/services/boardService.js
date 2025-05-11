@@ -70,38 +70,66 @@ const getBoardBySlug = async (slug) => {
 
 const store = async (data) => {
     try {
-        // Tạo board mới
+        // 1. Upload ảnh
+        const { secure_url } = await CloudinaryProvider.uploadFile(data.image);
+
+        // 2. Tạo slug và shortLink
+        const slug = slugify(data.title, { lower: true });
+        const shortLink = nanoid(8);
+
+        // 3. Chuẩn bị dữ liệu tạo Board
+        const boardData = {
+            title: data.title,
+            description: data.description,
+            type: data.type,
+            image: secure_url,
+            tags: data.tags.join(','),
+            slug,
+            shortLink,
+        };
+
+        // 4. Tạo hoặc tìm board
         const [board, created] = await db.Board.findOrCreate({
-            where: {
-                ...data,
-                slug: slugify(data.title, { lower: true }),
-                shortLink: nanoid(8),
+            where: { slug, shortLink },
+            defaults: boardData,
+        });
+
+        if (!created) return { message: 'Instance already exists!' };
+
+        // 5. Thêm members (loại bỏ trùng và chủ sở hữu)
+        const uniqueMembers = [...new Set(data.members)].filter((id) => id !== data.userId);
+
+        const memberData = [
+            ...uniqueMembers.map((userId) => ({
+                userId,
+                objectId: board.id,
+                objectType: 'board',
+                active: true,
+            })),
+            {
+                userId: data.userId,
+                role: 'owner',
+                objectId: board.id,
+                objectType: 'board',
+                active: true,
+            },
+        ];
+
+        await db.Member.bulkCreate(memberData);
+
+        // 6. Thêm board vào workspace
+        const workspace = await db.Workspace.findOne({ where: { userId: data.userId } });
+        if (!workspace) throw new Error('Workspace not found');
+
+        await workspace.addBoard(board, {
+            through: {
+                starred: false,
+                lastView: new Date(),
             },
         });
 
-        if (!created) {
-            return { message: 'Instance already exists!' };
-        }
-
-        // [ ]: workspace
-        // Lấy workspace tương ứng
-        //         const workspace = await db.Workspace.findByPk(data.workspaceId);
-        //
-        //         if (!workspace) {
-        //             throw new Error('Workspace not found');
-        //         }
-        //
-        //         // Thêm board vào workspace (tự động thêm vào bảng WorkspaceBoard)
-        //         await workspace.addBoard(board, {
-        //             through: {
-        //                 starred: false, // Giá trị mặc định
-        //                 lastView: new Date(), // Giá trị mặc định
-        //             },
-        //         });
-
         return board;
     } catch (error) {
-        console.log('🚀 ~ store ~ error:', error);
         throw error;
     }
 };

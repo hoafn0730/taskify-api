@@ -29,7 +29,7 @@ module.exports = {
                 onDelete: 'CASCADE', // Xóa liên kết khi board bị xóa
                 onUpdate: 'CASCADE', // Cập nhật liên kết khi board bị cập nhật
             },
-            isStarred: {
+            starred: {
                 type: Sequelize.BOOLEAN,
                 allowNull: false, // Ràng buộc NOT NULL
                 defaultValue: false, // Giá trị mặc định

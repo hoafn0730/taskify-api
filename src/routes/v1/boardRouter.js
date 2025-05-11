@@ -13,8 +13,15 @@ router.get(
     // boardMiddleware.checkMemberRole('member', 'admin', 'owner'),
     boardController.getBoardBySlug,
 );
+
 router.post('/', boardValidation.store, boardController.store);
+router.post(
+    '/:boardId/toggle-star',
+    //  boardValidation.toggleStarBoard,
+    boardController.toggleStarBoard,
+);
 router.post('/generate', boardController.generate);
+
 router.put(
     '/:id',
     //  boardMiddleware.checkMemberRole('admin', 'owner'),

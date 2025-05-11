@@ -5,15 +5,81 @@ import db from '~/models';
 
 const get = async (req, res, next) => {
     try {
-        const page = req.query.page;
-        const pageSize = req.query.pageSize;
-        const boards = await boardService.get({ page, pageSize });
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 10;
+        const sortBy = req.query.sortBy || 'latest';
+
+        const boards = await boardService.get({
+            all: true,
+            include: [
+                {
+                    model: db.Workspace,
+                    as: 'workspaces',
+                    through: {
+                        attributes: ['starred', 'lastView'],
+                    },
+                    where: { userId: req.user.id },
+                    required: false,
+                },
+                //
+                {
+                    model: db.User,
+                    as: 'members',
+                    through: {
+                        attributes: [],
+                    },
+                    attributes: ['id', 'username', 'email', 'displayName', 'avatar'],
+                },
+            ],
+            attributes: { exclude: ['columnOrderIds'] },
+        });
+
+        // ⭐️ Map thêm starred, lastView và sort
+        const sortedBoards = boards
+            .map((board) => {
+                const boardJson = board.toJSON();
+                const { workspaces, members, ...rest } = boardJson;
+
+                const starred = !!workspaces?.[0]?.WorkspaceBoard?.starred;
+                const lastView = workspaces?.[0]?.WorkspaceBoard?.lastView || new Date();
+
+                // Chuyển Member ra ngoài
+                const transformedMembers = members.map((member) => {
+                    const { Member, ...userData } = member;
+                    return {
+                        ...userData,
+                        ...Member, // Thêm thông tin từ Member ra ngoài
+                    };
+                });
+                return {
+                    ...rest,
+                    starred,
+                    lastView,
+                    members: transformedMembers,
+                };
+            })
+            .sort((a, b) => {
+                const starredDiff = Number(b.starred) - Number(a.starred);
+                if (starredDiff !== 0) return starredDiff;
+
+                return sortBy === 'latest'
+                    ? new Date(b.createdAt) - new Date(a.createdAt)
+                    : new Date(a.createdAt) - new Date(b.createdAt);
+            });
+
+        // ⚙️ Áp dụng phân trang thủ công sau khi đã sort
+        const offset = (page - 1) * pageSize;
+        const paginatedBoards = sortedBoards.slice(offset, offset + pageSize);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            meta: boards.meta,
-            data: boards.data,
+            meta: {
+                total: sortedBoards.length,
+                page,
+                pageSize,
+            },
+            data: paginatedBoards,
         });
     } catch (error) {
         next(error);
@@ -110,15 +176,7 @@ const getCombinedBoards = async (req, res, next) => {
 
 const store = async (req, res, next) => {
     try {
-        const board = await boardService.store(req.body);
-
-        // await memberService.store({
-        //     userId: req.user.id,
-        //     objectId: board.id,
-        //     objectType: 'board',
-        //     role: 'owner',
-        //     active: true,
-        // });
+        const board = await boardService.store({ ...req.body, userId: req.user.id });
 
         res.status(StatusCodes.CREATED).json({
             statusCode: StatusCodes.CREATED,
@@ -213,6 +271,38 @@ const updateBackground = async (req, res, next) => {
     }
 };
 
+const toggleStarBoard = async (req, res, next) => {
+    try {
+        const { boardId } = req.params;
+        const userId = req.user.id;
+
+        // Tìm workspace của user
+        const workspace = await db.Workspace.findOne({ where: { userId } });
+        if (!workspace) throw new Error('Workspace not found');
+
+        // Tìm mối quan hệ trong bảng trung gian
+        const entry = await db.WorkspaceBoard.findOne({
+            where: {
+                boardId,
+                workspaceId: workspace.id,
+            },
+        });
+
+        if (!entry) throw new Error('Board not linked to this workspace');
+
+        // Toggle giá trị starred
+        const updated = await entry.update({ starred: !entry.starred });
+
+        res.status(200).json({
+            statusCode: 200,
+            message: `Board has been ${updated.starred ? 'starred' : 'unstarred'} successfully!`,
+            data: { starred: updated.starred },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export default {
     get,
     search,
@@ -224,4 +314,5 @@ export default {
     generate,
     updateBackground,
     getCombinedBoards,
+    toggleStarBoard,
 };

@@ -43,7 +43,7 @@ router.post('/webhook/seapay', (req, res) => {
 
 router.use('/auth', authRouter);
 
-// router.all('*', authMiddleware.isAuthorized);
+router.all('*', authMiddleware.isAuthorized);
 
 router.use('/boards', boardRouter);
 router.use('/columns', columnRouter);

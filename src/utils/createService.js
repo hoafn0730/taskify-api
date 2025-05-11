@@ -6,7 +6,11 @@ const createService = (model) => {
                 const _pageSize = +pageSize;
                 const skip = (_page - 1) * _pageSize;
                 if (all) {
-                    const data = await model.findAll({ where, include, ...options });
+                    const data = await model.findAll({
+                        where,
+                        include,
+                        ...options,
+                    });
                     return data;
                 }
 
@@ -16,6 +20,8 @@ const createService = (model) => {
                     limit: _pageSize,
                     distinct: true,
                     include,
+                    raw: true, // lấy plain object, không cần gọi .toJSON()
+                    nest: true, // để Sequelize giữ cấu trúc nested
                     ...options,
                 });
 

@@ -1,11 +1,12 @@
 // const passport = require('passport');
 import express from 'express';
 import { authController } from '~/controllers/authController';
+import authMiddleware from '~/middlewares/authMiddleware';
 import { authValidation } from '~/validations/authValidation';
 
 const router = express.Router();
 
-// router.get('/current-user', authMiddleware.isAuthorized, authController.getCurrentUser);
+router.get('/me', authMiddleware.isAuthorized, authController.getCurrentUser);
 router.post('/sign-up', authValidation.signUp, authController.signUp);
 router.post('/sign-in', authValidation.signIn, authController.signIn);
 // router.post('/verify', authMiddleware.isAuthorized, authController.verifyServices);

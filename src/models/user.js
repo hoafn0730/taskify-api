@@ -9,6 +9,29 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            User.belongsToMany(User, {
+                as: 'friends',
+                through: models.Friend,
+                foreignKey: 'userId',
+                otherKey: 'friendId',
+            });
+            // User.belongsToMany(User, {
+            //     as: 'friendOf',
+            //     through: models.Friend,
+            //     foreignKey: 'friendId',
+            //     otherKey: 'userId',
+            // });
+
+            this.belongsToMany(models.Board, {
+                through: {
+                    model: models.Member,
+                    scope: { objectType: 'board' },
+                },
+                foreignKey: 'userId',
+                otherKey: 'objectId',
+                constraints: false,
+                as: 'boards',
+            });
         }
     }
     User.init(
