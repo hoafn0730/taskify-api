@@ -20,9 +20,12 @@ const getBoardBySlug = async (slug) => {
                     as: 'columns',
                 },
                 {
-                    model: db.Member,
+                    model: db.User,
                     as: 'members',
-                    include: { model: db.User, as: 'user' },
+                    through: {
+                        attributes: [],
+                    },
+                    attributes: ['id', 'username', 'email', 'displayName', 'avatar'],
                 },
             ],
         });

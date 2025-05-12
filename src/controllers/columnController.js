@@ -1,4 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
+import db from '~/models';
 import columnService from '~/services/columnService';
 
 const getOne = async (req, res, next) => {
@@ -62,4 +63,19 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export default { getOne, store, update, destroy };
+const clear = async (req, res, next) => {
+    try {
+        const columnId = req.params.id;
+        const result = await db.Card.destroy({ where: { columnId } });
+
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: `All cards in column ${columnId} have been deleted successfully.`,
+            data: { deletedCount: result.deletedCount },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export default { getOne, store, update, destroy, clear };

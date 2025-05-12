@@ -18,6 +18,7 @@ router.put(
     columnValidation.update,
     columnController.update,
 );
+router.delete('/:id/cards', columnValidation.destroy, columnController.clear);
 router.delete('/:id', columnValidation.destroy, columnController.destroy);
 
 export default router;
