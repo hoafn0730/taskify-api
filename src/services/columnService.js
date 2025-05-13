@@ -51,17 +51,35 @@ const update = async (columnId, data) => {
 
 const destroy = async (columnId) => {
     try {
-        const column = await db.Column.destroy({
-            where: {
-                id: columnId,
-            },
-        });
+        // Tìm column
+        const column = await db.Column.findOne({ where: { id: columnId } });
 
-        if (column) {
-            return { message: 'Successfully!' };
+        if (!column) {
+            return { message: 'Column not found' };
         }
 
-        return { message: 'Error' };
+        // Lấy boardId từ column để cập nhật Board
+        const board = await db.Board.findOne({ where: { id: column.boardId } });
+
+        if (board) {
+            // Loại bỏ columnId khỏi columnOrderIds (giả sử là mảng UUIDs)
+            const updatedOrder = board.columnOrderIds.filter((uuid) => uuid !== column.uuid);
+
+            // Cập nhật board với columnOrderIds mới
+            await db.Board.update({ columnOrderIds: updatedOrder }, { where: { id: column.boardId } });
+        }
+
+        // Xóa tất cả các card thuộc columnId
+        await db.Card.destroy({
+            where: { columnId: columnId },
+        });
+
+        // Xóa column
+        await db.Column.destroy({
+            where: { id: columnId },
+        });
+
+        return { message: 'Successfully!' };
     } catch (error) {
         throw error;
     }
