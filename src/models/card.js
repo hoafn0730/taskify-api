@@ -31,8 +31,14 @@ module.exports = (sequelize, DataTypes) => {
             uuid: DataTypes.STRING,
             dueStart: DataTypes.DATE,
             dueDate: DataTypes.DATE,
-            dueComplete: DataTypes.BOOLEAN,
-            dueReminder: DataTypes.INTEGER,
+            dueComplete: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+            },
+            dueReminder: {
+                type: DataTypes.INTEGER,
+                defaultValue: -1,
+            },
             archivedAt: {
                 type: DataTypes.DATE,
                 allowNull: true,
