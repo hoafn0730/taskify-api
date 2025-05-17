@@ -8,15 +8,15 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            // define association here
+            this.belongsTo(models.File, { foreignKey: 'fileId' });
+            this.belongsTo(models.Card, { foreignKey: 'objectId', constraints: false });
         }
     }
     Attachment.init(
         {
-            cardId: DataTypes.INTEGER,
-            fileName: DataTypes.STRING,
-            fileType: DataTypes.STRING,
-            fileUrl: DataTypes.TEXT,
+            fileId: DataTypes.INTEGER,
+            objectId: DataTypes.INTEGER,
+            objectType: DataTypes.STRING,
         },
         {
             sequelize,

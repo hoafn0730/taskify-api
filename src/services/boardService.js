@@ -12,7 +12,8 @@ import GeminiProvider from '~/providers/GeminiProvider';
 
 const getBoardBySlug = async (slug) => {
     try {
-        const data = await db.Board.findOne({
+        // 1. Lấy thông tin bảng (board) theo slug, bao gồm các cột (columns) và thành viên (members)
+        const board = await db.Board.findOne({
             where: { slug },
             include: [
                 {
@@ -23,22 +24,34 @@ const getBoardBySlug = async (slug) => {
                     model: db.User,
                     as: 'members',
                     through: {
-                        attributes: [],
+                        attributes: ['role'], // Không lấy thuộc tính trung gian từ bảng Member
                     },
-                    attributes: ['id', 'username', 'email', 'displayName', 'avatar'],
+                    attributes: ['id', 'username', 'email', 'displayName', 'avatar'], // Chỉ lấy một số trường cần thiết
                 },
             ],
         });
 
+        // 2. Lấy tất cả các thẻ (cards) thuộc board đó
         const cards = await db.Card.findAll({
-            where: { boardId: data.id },
+            where: { boardId: board.id },
             include: [
-                { model: db.Attachment, as: 'cover' },
-                { model: db.Attachment, as: 'attachments' },
-                { model: db.Comment, as: 'comments' },
+                {
+                    model: db.File,
+                    as: 'cover', // Lấy file cover (có thể sẽ không dùng nếu lọc cover thủ công)
+                    through: { attributes: [] },
+                },
+                {
+                    model: db.File,
+                    as: 'attachments', // Lấy tất cả các tệp đính kèm
+                    through: { attributes: [] },
+                },
+                {
+                    model: db.Comment,
+                    as: 'comments', // Lấy tất cả comment trong card
+                },
                 {
                     model: db.User,
-                    as: 'assignees',
+                    as: 'assignees', // Người được giao nhiệm vụ
                     through: {
                         attributes: [],
                     },
@@ -46,13 +59,13 @@ const getBoardBySlug = async (slug) => {
                 },
                 {
                     model: db.User,
-                    as: 'reporter',
+                    as: 'reporter', // Người tạo nhiệm vụ
                     attributes: ['id', 'username', 'email', 'displayName', 'avatar'],
                     through: { attributes: [] },
                 },
                 {
                     model: db.Checklist,
-                    as: 'checklists',
+                    as: 'checklists', // Lấy checklist và các item con
                     include: [
                         {
                             model: db.CheckItem,
@@ -63,21 +76,35 @@ const getBoardBySlug = async (slug) => {
             ],
         });
 
-        // Tạo map từ columnId -> columnUUID
-        const columnIdToUUIDMap = Object.fromEntries(data.columns.map((col) => [col.id, col.uuid]));
+        // 3. Gán file cover vào mỗi card (cover là attachment có id trùng với card.image)
+        const result = cards.map((card) => {
+            const cover = card.attachments.find((file) => file.id === card.image);
+            return {
+                ...card.toJSON(),
+                cover, // Gán cover vào object trả về
+            };
+        });
 
-        // Group cards theo columnUUID
-        const cardsByColumnUUID = _.groupBy(cards, (card) => columnIdToUUIDMap[card.columnId]);
+        // 4. Tạo map từ columnId sang columnUUID để dễ xử lý
+        const columnIdToUUIDMap = Object.fromEntries(board.columns.map((col) => [col.id, col.uuid]));
 
-        // Gán vào data với key là tasks
-        const plainData = data.toJSON();
-        // Đảm bảo column nào cũng có array (kể cả column không có card)
+        // 5. Gom nhóm các card theo columnUUID
+        const cardsByColumnUUID = _.groupBy(result, (card) => columnIdToUUIDMap[card.columnId]);
+
+        // 6. Tạo object `tasks` chứa danh sách card theo từng cột (theo UUID)
+        const plainData = board.toJSON();
         plainData.tasks = {};
-        for (const col of data.columns) {
+        for (const col of board.columns) {
             const columnUUID = col.uuid;
-            plainData.tasks[columnUUID] = cardsByColumnUUID[columnUUID] || [];
+            plainData.tasks[columnUUID] = cardsByColumnUUID[columnUUID] || []; // Nếu cột không có card thì gán mảng rỗng
         }
 
+        plainData.members = plainData.members.map(({ Member, ...member }) => ({
+            ...member,
+            role: Member.role,
+        }));
+
+        // 7. Trả về dữ liệu board đầy đủ (columns, members, cards group theo column)
         return plainData;
     } catch (error) {
         throw error;

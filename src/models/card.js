@@ -11,9 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             this.belongsTo(models.Board, { foreignKey: 'boardId', as: 'board' });
             this.belongsTo(models.Column, { foreignKey: 'columnId', as: 'column' });
-            this.belongsTo(models.Attachment, { foreignKey: 'image', as: 'cover' });
             this.hasMany(models.Checklist, { foreignKey: 'cardId', as: 'checklists' });
-            this.hasMany(models.Attachment, { foreignKey: 'cardId', as: 'attachments' });
             this.hasMany(models.Comment, { foreignKey: 'commentableId', as: 'comments' });
 
             this.belongsToMany(models.User, {
@@ -35,6 +33,27 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'userId',
                 constraints: false,
                 as: 'reporter',
+            });
+
+            this.belongsToMany(models.File, {
+                through: {
+                    model: models.Attachment,
+                    scope: { objectType: 'card' },
+                },
+                foreignKey: 'objectId',
+                otherKey: 'fileId',
+                constraints: false,
+                as: 'attachments',
+            });
+            this.belongsToMany(models.File, {
+                through: {
+                    model: models.Attachment,
+                    scope: { objectType: 'card' },
+                },
+                foreignKey: 'objectId',
+                otherKey: 'fileId',
+                constraints: false,
+                as: 'cover',
             });
         }
     }

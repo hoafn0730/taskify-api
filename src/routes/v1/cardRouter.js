@@ -1,6 +1,6 @@
 import express from 'express';
 import cardController from '~/controllers/cardController';
-import boardMiddleware from '~/middlewares/boardMiddleware';
+// import boardMiddleware from '~/middlewares/boardMiddleware';
 import { cardValidation } from '~/validations/cardValidation';
 
 const router = express.Router();
@@ -15,13 +15,20 @@ router.post(
     cardController.store,
 );
 router.post('/:cardId/toggle-assignee', cardController.toggleAssignee);
+router.post(
+    '/:id/files',
+    //  boardMiddleware.checkMemberRole('admin', 'owner'),
+    cardController.updateFile,
+);
 router.put(
     '/:id',
     // boardMiddleware.checkMemberRole('admin', 'owner'),
     cardValidation.update,
     cardController.update,
 );
-router.put('/:id/update-cover', boardMiddleware.checkMemberRole('admin', 'owner'), cardController.updateCover);
+
+router.delete('/:id/files/:fileId', cardController.deleteFile);
+
 router.delete('/:id', cardValidation.destroy, cardController.destroy);
 
 export default router;

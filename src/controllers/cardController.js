@@ -158,10 +158,10 @@ const toggleAssignee = async (req, res, next) => {
     }
 };
 
-const updateCover = async (req, res, next) => {
+const updateFile = async (req, res, next) => {
     try {
         const cardId = req.params.id;
-        const updated = await cardService.updateCover(cardId, req.body);
+        const updated = await cardService.updateFile(cardId, req.body);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
@@ -173,4 +173,20 @@ const updateCover = async (req, res, next) => {
     }
 };
 
-export default { get, getOneBySlug, store, update, destroy, toggleAssignee, updateCover, getUpNext };
+const deleteFile = async (req, res, next) => {
+    try {
+        const cardId = req.params.id;
+        const fileId = req.params.fileId;
+        const deleted = await cardService.deleteFile(cardId, fileId);
+
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: deleted,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export default { get, getOneBySlug, store, update, destroy, toggleAssignee, updateFile, deleteFile, getUpNext };
