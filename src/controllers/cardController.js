@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { Op } from 'sequelize';
+import db from '~/models';
 import { cardService } from '~/services';
 
 const get = async (req, res, next) => {
@@ -54,7 +55,8 @@ const getUpNext = async (req, res, next) => {
 
 const store = async (req, res, next) => {
     try {
-        const card = await cardService.store(req.body);
+        const userId = req.user.id;
+        const card = await cardService.store(req.body, userId);
 
         res.status(StatusCodes.CREATED).json({
             statusCode: StatusCodes.CREATED,
@@ -86,7 +88,7 @@ const destroy = async (req, res, next) => {
     try {
         const cardId = req.params.id;
 
-        const deleted = await cardService.destroy(cardId, req.body);
+        const deleted = await cardService.destroy(cardId);
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
@@ -95,6 +97,64 @@ const destroy = async (req, res, next) => {
         });
     } catch (error) {
         next(error);
+    }
+};
+
+const toggleAssignee = async (req, res, next) => {
+    const { cardId } = req.params;
+    const { userId } = req.body;
+
+    if (!userId) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            statusCode: StatusCodes.BAD_REQUEST,
+            message: 'Missing userId in request body',
+        });
+    }
+
+    try {
+        const card = await db.Card.findByPk(cardId);
+
+        if (!card) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                statusCode: StatusCodes.NOT_FOUND,
+                message: 'Card not found',
+            });
+        }
+
+        const existing = await db.Member.findOne({
+            where: {
+                userId,
+                objectId: cardId,
+                objectType: 'card',
+                role: 'member',
+            },
+        });
+
+        if (existing) {
+            await existing.destroy();
+
+            return res.status(StatusCodes.OK).json({
+                statusCode: StatusCodes.OK,
+                message: 'User unassigned from card',
+                assigned: false,
+            });
+        }
+
+        await db.Member.create({
+            userId,
+            objectId: cardId,
+            objectType: 'card',
+            role: 'member',
+            active: true,
+        });
+
+        return res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: 'User assigned to card',
+            assigned: true,
+        });
+    } catch (error) {
+        next(error); // Đẩy lỗi về middleware xử lý chung
     }
 };
 
@@ -113,4 +173,4 @@ const updateCover = async (req, res, next) => {
     }
 };
 
-export default { get, getOneBySlug, getUpNext, store, update, destroy, updateCover };
+export default { get, getOneBySlug, store, update, destroy, toggleAssignee, updateCover, getUpNext };

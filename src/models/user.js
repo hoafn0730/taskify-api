@@ -32,6 +32,16 @@ module.exports = (sequelize, DataTypes) => {
                 constraints: false,
                 as: 'boards',
             });
+            this.belongsToMany(models.Card, {
+                through: {
+                    model: models.Member,
+                    scope: { objectType: 'card' },
+                },
+                foreignKey: 'userId',
+                otherKey: 'objectId',
+                constraints: false,
+                as: 'cards',
+            });
         }
     }
     User.init(
@@ -45,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
             address: DataTypes.STRING,
             avatar: DataTypes.STRING,
             type: DataTypes.STRING,
-            role: DataTypes.STRING,
+            role: { type: DataTypes.STRING, defaultValue: 'user' },
             status: DataTypes.STRING,
             lastActivity: DataTypes.DATE,
         },

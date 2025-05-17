@@ -36,7 +36,20 @@ const getBoardBySlug = async (slug) => {
                 { model: db.Attachment, as: 'cover' },
                 { model: db.Attachment, as: 'attachments' },
                 { model: db.Comment, as: 'comments' },
-                { model: db.Member, as: 'assignee' },
+                {
+                    model: db.User,
+                    as: 'assignees',
+                    through: {
+                        attributes: [],
+                    },
+                    attributes: ['id', 'username', 'email', 'displayName', 'avatar'],
+                },
+                {
+                    model: db.User,
+                    as: 'reporter',
+                    attributes: ['id', 'username', 'email', 'displayName', 'avatar'],
+                    through: { attributes: [] },
+                },
                 {
                     model: db.Checklist,
                     as: 'checklists',

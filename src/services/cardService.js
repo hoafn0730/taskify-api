@@ -90,27 +90,42 @@ const getOneBySlug = async (slug, archivedAt) => {
     }
 };
 
-const store = async (data) => {
+const store = async (data, userId) => {
     try {
-        const [card, created] = await db.Card.findOrCreate({
-            where: {
-                ...data,
-                uuid: uuidv4(),
-                slug: slugify(data.title, { lower: true }),
-                shortLink: nanoid(8),
-            },
+        // Tạo card mới
+        const card = await db.Card.create({
+            ...data,
+            uuid: uuidv4(),
+            slug: slugify(data.title, { lower: true }),
+            shortLink: nanoid(8),
         });
 
-        // Update column
-        const column = await db.Column.findOne({ where: { id: data.columnId } });
-        column.update({ cardOrderIds: [...column.cardOrderIds, card.uuid] });
+        // Cập nhật cardOrderIds trong column tương ứng
+        const column = await db.Column.findByPk(data.columnId);
 
-        if (!created) {
-            return { message: 'Instance was exist!' };
+        if (!column) {
+            throw new Error('Column not found');
         }
+
+        // Đảm bảo cardOrderIds là mảng
+        const currentOrder = Array.isArray(column.cardOrderIds) ? column.cardOrderIds : [];
+
+        await column.update({
+            cardOrderIds: [...currentOrder, card.uuid],
+        });
+
+        // Gán user là reporter cho card
+        await db.Member.create({
+            userId,
+            objectId: card.id,
+            objectType: 'card',
+            role: 'reporter',
+            active: true,
+        });
 
         return card;
     } catch (error) {
+        console.error('Error creating card:', error);
         throw error;
     }
 };
@@ -138,12 +153,23 @@ const update = async (cardId, data) => {
 
 const destroy = async (cardId) => {
     try {
-        const card = await db.Card.destroy({
-            where: {
-                id: cardId,
-            },
-        });
-        return card;
+        // Tìm card trước khi xóa để biết nó thuộc column nào
+        const card = await db.Card.findByPk(cardId);
+        if (!card) throw new Error('Card not found');
+
+        const column = await db.Column.findByPk(card.columnId);
+        if (!column) throw new Error('Column not found');
+
+        // Loại bỏ cardId khỏi cardOrderIds
+        const newCardOrderIds = column.cardOrderIds.filter((uuid) => uuid !== card.uuid);
+
+        // Cập nhật column
+        await db.Column.update({ cardOrderIds: newCardOrderIds }, { where: { id: column.id } });
+
+        // Xóa card
+        await db.Card.destroy({ where: { id: cardId } });
+
+        return { message: 'Card deleted successfully', cardId };
     } catch (error) {
         throw error;
     }

@@ -157,7 +157,7 @@ const getCurrentUser = async (req, res, next) => {
                 username: req.user.username,
                 email: req.user.email,
             },
-            attributes: { exclude: ['password', 'type', 'code', 'role', 'createdAt', 'updatedAt', 'deletedAt'] },
+            attributes: { exclude: ['password', 'type', 'code', 'createdAt', 'updatedAt', 'deletedAt'] },
             include: [
                 {
                     model: db.User,

@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             this.belongsTo(models.User, { foreignKey: 'userId' });
             this.belongsTo(models.Board, { foreignKey: 'objectId', constraints: false });
+            this.belongsTo(models.Card, { foreignKey: 'objectId', constraints: false });
         }
     }
     Member.init(

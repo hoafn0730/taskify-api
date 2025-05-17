@@ -16,7 +16,26 @@ module.exports = (sequelize, DataTypes) => {
             this.hasMany(models.Attachment, { foreignKey: 'cardId', as: 'attachments' });
             this.hasMany(models.Comment, { foreignKey: 'commentableId', as: 'comments' });
 
-            this.hasMany(models.Member, { foreignKey: 'objectId', as: 'assignee' });
+            this.belongsToMany(models.User, {
+                through: {
+                    model: models.Member,
+                    scope: { objectType: 'card' },
+                },
+                foreignKey: 'objectId',
+                otherKey: 'userId',
+                constraints: false,
+                as: 'assignees',
+            });
+            this.belongsToMany(models.User, {
+                through: {
+                    model: models.Member,
+                    scope: { objectType: 'card', role: 'reporter' },
+                },
+                foreignKey: 'objectId',
+                otherKey: 'userId',
+                constraints: false,
+                as: 'reporter',
+            });
         }
     }
     Card.init(
@@ -43,6 +62,8 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            priority: DataTypes.STRING,
+            labels: DataTypes.STRING,
         },
         {
             sequelize,
