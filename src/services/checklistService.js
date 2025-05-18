@@ -1,5 +1,40 @@
 import db from '~/models';
 
+const store = async (data) => {
+    try {
+        const checklist = await db.Checklist.create({
+            cardId: data.cardId,
+            title: data.title,
+        });
+
+        // Nếu có copyFrom thì sao chép items
+        if (data.copyFrom) {
+            const sourceChecklist = await db.Checklist.findByPk(data.copyFrom, {
+                include: [{ model: db.CheckItem, as: 'items' }],
+            });
+
+            if (sourceChecklist && sourceChecklist.items.length > 0) {
+                const copiedItems = sourceChecklist.items.map((item) => ({
+                    checklistId: checklist.id,
+                    title: item.title,
+                    status: item.status,
+                }));
+
+                await db.CheckItem.bulkCreate(copiedItems);
+            }
+        }
+
+        // Truy vấn lại checklist kèm checkItems vừa được tạo
+        const fullChecklist = await db.Checklist.findByPk(checklist.id, {
+            include: [{ model: db.CheckItem, as: 'items' }],
+        });
+
+        return fullChecklist;
+    } catch (error) {
+        throw error;
+    }
+};
+
 const storeCheckItem = async (data) => {
     try {
         const checkItem = await db.CheckItem.create(data);
@@ -47,8 +82,4 @@ const destroyCheckItem = async (checklistId, checkItemId) => {
     }
 };
 
-export default {
-    storeCheckItem,
-    updateCheckItem,
-    destroyCheckItem,
-};
+export default { store, storeCheckItem, updateCheckItem, destroyCheckItem };

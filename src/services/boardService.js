@@ -66,10 +66,14 @@ const getBoardBySlug = async (slug) => {
                 {
                     model: db.Checklist,
                     as: 'checklists', // Lấy checklist và các item con
+                    separate: true,
+                    order: [['createdAt', 'ASC']],
                     include: [
                         {
                             model: db.CheckItem,
-                            as: 'checkItems',
+                            as: 'items',
+                            separate: true,
+                            order: [['createdAt', 'ASC']],
                         },
                     ],
                 },

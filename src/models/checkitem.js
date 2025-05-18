@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     }
     CheckItem.init(
         {
+            cardId: DataTypes.INTEGER,
             checklistId: DataTypes.INTEGER,
             title: DataTypes.STRING,
             status: { type: DataTypes.STRING, defaultValue: 'incomplete' },

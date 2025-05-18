@@ -9,9 +9,6 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER,
             },
-            boardId: {
-                type: Sequelize.INTEGER,
-            },
             cardId: {
                 type: Sequelize.INTEGER,
             },

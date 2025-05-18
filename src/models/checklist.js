@@ -9,12 +9,11 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            this.hasMany(models.CheckItem, { foreignKey: 'checklistId', as: 'checkItems' });
+            this.hasMany(models.CheckItem, { foreignKey: 'checklistId', as: 'items' });
         }
     }
     Checklist.init(
         {
-            boardId: DataTypes.INTEGER,
             cardId: DataTypes.INTEGER,
             title: DataTypes.STRING,
         },
