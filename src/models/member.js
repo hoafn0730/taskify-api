@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            this.belongsTo(models.User, { foreignKey: 'userId' });
+            this.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
             this.belongsTo(models.Board, { foreignKey: 'objectId', constraints: false });
             this.belongsTo(models.Card, { foreignKey: 'objectId', constraints: false });
         }
@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
             objectId: DataTypes.INTEGER,
             objectType: DataTypes.STRING,
             role: { type: DataTypes.STRING, defaultValue: 'member' },
-            active: DataTypes.BOOLEAN,
+            active: { type: DataTypes.BOOLEAN, defaultValue: false },
         },
         {
             sequelize,

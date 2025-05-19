@@ -2,6 +2,9 @@ import { Op } from 'sequelize';
 import { StatusCodes } from 'http-status-codes';
 import { boardService, memberService, workspaceService } from '~/services';
 import db from '~/models';
+import { JwtProvider } from '~/providers/JwtProvider';
+import { BrevoProvider } from '~/providers/BrevoProvider';
+import { NodemailerProvider } from '~/providers/NodemailerProvider';
 
 const get = async (req, res, next) => {
     try {
@@ -303,6 +306,103 @@ const toggleStarBoard = async (req, res, next) => {
     }
 };
 
+const invite = async (req, res, next) => {
+    try {
+        const { boardId } = req.params;
+        const { inviteEmail } = req.body;
+
+        // Tìm board
+        const board = await db.Board.findByPk(boardId);
+        if (!board) {
+            return res.status(404).json({
+                statusCode: 404,
+                message: 'Board not found',
+            });
+        }
+
+        // Tìm user theo email
+        const user = await db.User.findOne({
+            where: { email: inviteEmail },
+            attributes: ['id', 'displayName', 'email'],
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                statusCode: 404,
+                message: 'User with this email does not exist',
+            });
+        }
+
+        const userId = user.id;
+
+        // Kiểm tra nếu đã là member
+        const member = await db.Member.findOne({
+            where: {
+                userId,
+                objectId: boardId,
+                objectType: 'board',
+            },
+        });
+
+        if (member) {
+            if (member.active) {
+                return res.status(400).json({
+                    statusCode: 400,
+                    message: 'User is already a member of this board',
+                });
+            }
+
+            return res.status(200).json({
+                statusCode: 200,
+                message: 'User has already been invited but has not accepted yet',
+                data: {
+                    boardId,
+                    userId,
+                    status: 'pending',
+                },
+            });
+        }
+
+        // Tạo token mời
+        const token = JwtProvider.createToken({ boardId, userId }, '2d');
+        const inviteLink = `${process.env.CLIENT_URL}/invite/${token}`;
+
+        // Gửi email mời
+        await NodemailerProvider.sendEmail({
+            email: 'nguyentiendat39000@gmail.com' || user.email,
+            subject: `You've been invited to the board: ${board.title}`,
+            htmlContent: `
+                <h3>Hello ${'nguyentiendat39000@gmail.com' || user.displayName || user.email},</h3>
+                <p>You have been invited to join the board <strong>${board.title}</strong>.</p>
+                <p>Click the link below to accept the invitation:</p>
+                <a href="${inviteLink}" target="_blank" style="display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;">Accept Invitation</a>
+                <p>This link will expire in 2 days.</p>
+            `,
+        });
+
+        // Thêm user vào board với active: false (chờ chấp nhận)
+        await db.Member.create({
+            userId,
+            objectId: boardId,
+            objectType: 'board',
+            active: false,
+        });
+
+        return res.status(200).json({
+            statusCode: 200,
+            message: 'Invitation sent successfully',
+            data: {
+                boardId,
+                userId,
+                inviteEmail,
+                status: 'pending',
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export default {
     get,
     search,
@@ -315,4 +415,5 @@ export default {
     updateBackground,
     getCombinedBoards,
     toggleStarBoard,
+    invite,
 };

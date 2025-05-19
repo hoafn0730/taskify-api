@@ -10,7 +10,6 @@ import columnRouter from './columnRouter';
 import cardRouter from './cardRouter';
 import userRouter from './userRouter';
 import checklistRouter from './checklistRouter';
-import memberRouter from './memberRouter';
 import commentRouter from './commentRouter';
 import notificationRouter from './notificationRouter';
 import workspaceRouter from './workspaceRouter';
@@ -48,7 +47,7 @@ router.use('/boards', boardRouter);
 router.use('/columns', columnRouter);
 router.use('/cards', cardRouter);
 router.use('/checklists', checklistRouter);
-router.use('/members', memberRouter);
+
 router.use('/comments', commentRouter);
 router.use('/notifications', notificationRouter);
 router.use('/users', userRouter);

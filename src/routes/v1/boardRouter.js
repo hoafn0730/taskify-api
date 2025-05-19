@@ -6,8 +6,10 @@ import boardValidation from '~/validations/boardValidation';
 const router = express.Router();
 
 router.get('/', boardController.get);
+
 router.get('/search', boardController.search);
 router.get('/combined', boardController.getCombinedBoards);
+
 router.get(
     '/:slug',
     // boardMiddleware.checkMemberRole('member', 'admin', 'owner'),
@@ -20,6 +22,8 @@ router.post(
     //  boardValidation.toggleStarBoard,
     boardController.toggleStarBoard,
 );
+router.post('/:boardId/invite', boardController.invite);
+
 router.post('/generate', boardController.generate);
 
 router.put(
@@ -36,10 +40,11 @@ router.put(
 );
 router.delete(
     '/:id',
-    boardMiddleware.checkMemberRole('admin', 'owner'),
+    // boardMiddleware.checkMemberRole('admin', 'owner'),
     boardValidation.destroy,
     boardController.destroy,
 );
+
 router.put(
     '/:id/update-background',
     boardMiddleware.checkMemberRole('admin', 'owner'),

@@ -42,6 +42,7 @@ module.exports = (sequelize, DataTypes) => {
                 constraints: false,
                 as: 'cards',
             });
+            this.hasMany(models.Member, { foreignKey: 'userId' });
         }
     }
     User.init(

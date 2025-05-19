@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
 
-const createToken = (payload) => {
+const createToken = (payload, expiresIn) => {
     let key = process.env.JWT_SECRET;
 
     return jwt.sign(payload, key, {
-        expiresIn: process.env.JWT_EXPIRES_IN,
+        expiresIn: expiresIn || process.env.JWT_EXPIRES_IN,
     });
 };
 
