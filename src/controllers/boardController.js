@@ -1,5 +1,6 @@
 import { Op } from 'sequelize';
 import { StatusCodes } from 'http-status-codes';
+
 import { boardService, memberService, workspaceService } from '~/services';
 import db from '~/models';
 import { JwtProvider } from '~/providers/JwtProvider';
@@ -116,22 +117,22 @@ const search = async (req, res, next) => {
 };
 
 const getBoardBySlug = async (req, res, next) => {
-    // const userId = req.user.id;
+    const userId = req.user.id;
 
     try {
         const slug = req.params.slug;
         const board = await boardService.getBoardBySlug(slug);
 
-        // const workspace = await workspaceService.getOne({ where: { userId: userId }, raw: true });
+        const workspace = await workspaceService.getOne({ where: { userId: userId }, raw: true });
 
-        // await db.WorkspaceBoard.upsert(
-        //     {
-        //         boardId: board.id,
-        //         workspaceId: workspace.id,
-        //         lastView: new Date(),
-        //     },
-        //     { workspaceId: workspace.id },
-        // );
+        await db.WorkspaceBoard.upsert(
+            {
+                boardId: board.id,
+                workspaceId: workspace.id,
+                lastView: new Date(),
+            },
+            { workspaceId: workspace.id },
+        );
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
@@ -365,14 +366,14 @@ const invite = async (req, res, next) => {
 
         // Tạo token mời
         const token = JwtProvider.createToken({ boardId, userId }, '2d');
-        const inviteLink = `${process.env.CLIENT_URL}/invite/${token}`;
+        const inviteLink = `${process.env.WEBSITE_DOMAIN}/dashboard/kanban/accept-invite?token=${token}`;
 
         // Gửi email mời
         await NodemailerProvider.sendEmail({
-            email: 'nguyentiendat39000@gmail.com' || user.email,
+            email: user.email,
             subject: `You've been invited to the board: ${board.title}`,
             htmlContent: `
-                <h3>Hello ${'nguyentiendat39000@gmail.com' || user.displayName || user.email},</h3>
+                <h3>Hello ${user.displayName || user.email},</h3>
                 <p>You have been invited to join the board <strong>${board.title}</strong>.</p>
                 <p>Click the link below to accept the invitation:</p>
                 <a href="${inviteLink}" target="_blank" style="display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;">Accept Invitation</a>
@@ -403,6 +404,40 @@ const invite = async (req, res, next) => {
     }
 };
 
+const acceptInvite = async (req, res, next) => {
+    try {
+        const { token } = req.body;
+        const payload = JwtProvider.verifyToken(token);
+
+        const { boardId, userId } = payload;
+
+        const member = await db.Member.findOne({
+            where: { userId, objectId: boardId, objectType: 'board' },
+        });
+
+        if (!member) {
+            return res.status(404).json({ statusCode: 404, message: 'Invitation not found' });
+        }
+
+        if (member.active) {
+            return res.status(400).json({ statusCode: 400, message: 'Already joined this board' });
+        }
+
+        member.active = true;
+        await member.save();
+
+        const board = await db.Board.findByPk(boardId);
+
+        res.status(200).json({
+            statusCode: 200,
+            message: 'Invitation accepted',
+            data: board,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export default {
     get,
     search,
@@ -416,4 +451,5 @@ export default {
     getCombinedBoards,
     toggleStarBoard,
     invite,
+    acceptInvite,
 };

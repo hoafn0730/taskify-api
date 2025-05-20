@@ -24,7 +24,7 @@ const getBoardBySlug = async (slug) => {
                     model: db.User,
                     as: 'members',
                     through: {
-                        attributes: ['role'], // Không lấy thuộc tính trung gian từ bảng Member
+                        attributes: ['role', 'active'], // Không lấy thuộc tính trung gian từ bảng Member
                     },
                     attributes: ['id', 'username', 'email', 'displayName', 'avatar'], // Chỉ lấy một số trường cần thiết
                 },
@@ -106,6 +106,7 @@ const getBoardBySlug = async (slug) => {
         plainData.members = plainData.members.map(({ Member, ...member }) => ({
             ...member,
             role: Member.role,
+            active: Member.active,
         }));
 
         // 7. Trả về dữ liệu board đầy đủ (columns, members, cards group theo column)

@@ -12,7 +12,7 @@ router.get('/combined', boardController.getCombinedBoards);
 
 router.get(
     '/:slug',
-    // boardMiddleware.checkMemberRole('member', 'admin', 'owner'),
+    //  boardMiddleware.checkMemberRole('member', 'admin', 'owner'),
     boardController.getBoardBySlug,
 );
 
@@ -22,6 +22,7 @@ router.post(
     //  boardValidation.toggleStarBoard,
     boardController.toggleStarBoard,
 );
+router.post('/accept-invite', boardController.acceptInvite);
 router.post('/:boardId/invite', boardController.invite);
 
 router.post('/generate', boardController.generate);
