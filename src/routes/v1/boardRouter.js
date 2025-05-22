@@ -24,6 +24,7 @@ router.post(
 );
 router.post('/accept-invite', boardController.acceptInvite);
 router.post('/:boardId/invite', boardController.invite);
+router.put('/:boardId/members/:memberId/permission', boardController.changePermission);
 
 router.post('/generate', boardController.generate);
 

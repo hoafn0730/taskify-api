@@ -438,6 +438,55 @@ const acceptInvite = async (req, res, next) => {
     }
 };
 
+const changePermission = async (req, res, next) => {
+    try {
+        const { boardId, memberId } = req.params;
+        const { role } = req.body;
+        const validRoles = ['viewer', 'member', 'admin', 'owner'];
+
+        if (!validRoles.includes(role)) {
+            return res.status(400).json({
+                statusCode: 400,
+                message: 'Invalid role provided',
+            });
+        }
+
+        const member = await db.Member.findOne({
+            where: {
+                userId: memberId,
+                objectId: boardId,
+                objectType: 'board',
+            },
+        });
+
+        if (!member) {
+            return res.status(404).json({
+                statusCode: 404,
+                message: 'Member not found in this board',
+            });
+        }
+
+        // (Optional) Check quyền của người gọi API — phải là admin mới được sửa role người khác
+        // const requesterMember = await db.Member.findOne({ ... });
+        // if (requesterMember.role !== 'admin') return res.status(403).json(...);
+
+        // Cập nhật role
+        member.role = role;
+        await member.save();
+
+        return res.status(200).json({
+            statusCode: 200,
+            message: 'Permission updated successfully',
+            data: {
+                memberId: member.id,
+                role: member.role,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export default {
     get,
     search,
@@ -452,4 +501,5 @@ export default {
     toggleStarBoard,
     invite,
     acceptInvite,
+    changePermission,
 };

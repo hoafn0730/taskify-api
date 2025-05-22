@@ -14,4 +14,5 @@ export const categoryService = createService(db.Category);
 export const workspaceService = createService(db.Workspace);
 export const transactionService = createService(db.Transaction);
 export const mailService = createService(db.Mail);
+export const eventService = createService(db.Event);
 export const checklistService = createService(db.Checklist).extends(checklist);

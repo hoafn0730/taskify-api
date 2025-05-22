@@ -58,7 +58,15 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             role: { type: DataTypes.STRING, defaultValue: 'user' },
             status: DataTypes.STRING,
-            lastActivity: DataTypes.DATE,
+            lastActivity: DataTypes.DATE, // Thêm chỉ trường xác thực email
+            verified: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+            },
+            verifiedAt: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             sequelize,

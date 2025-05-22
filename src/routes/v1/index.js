@@ -18,6 +18,7 @@ import categoryRouter from './categoryRouter';
 import authRouter from './authRouter';
 import mailRouter from './mailRouter';
 import chatRouter from './chatRouter';
+import calendarRouter from './calendarRouter';
 
 const router = express.Router();
 
@@ -56,6 +57,7 @@ router.use('/transactions', transactionRouter);
 router.use('/categories', categoryRouter);
 router.use('/mails', mailRouter);
 router.use('/chat', chatRouter);
+router.use('/calendar', calendarRouter);
 
 router.get('/get-by-short-link', async (req, res, next) => {
     const shortLink = req.query.shortLink;
