@@ -1,6 +1,3 @@
-import { nanoid } from 'nanoid';
-import slugify from 'slugify';
-import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 
 import db from '~/models';
@@ -14,22 +11,6 @@ const get = async ({ page = 1, pageSize = 10, where, ...options }) => {
             offset: skip,
             limit: pageSize,
             distinct: true,
-            include: [
-                { model: db.Attachment, as: 'cover', required: false },
-                { model: db.Attachment, as: 'attachments', required: false },
-                {
-                    model: db.Checklist,
-                    as: 'checklists',
-                    required: false,
-                    include: [
-                        {
-                            model: db.CheckItem,
-                            as: 'checkItems',
-                            required: false,
-                        },
-                    ],
-                },
-            ],
             ...options,
         });
 
@@ -96,12 +77,7 @@ const getOneBySlug = async (slug, archivedAt) => {
 const store = async (data, userId) => {
     try {
         // Tạo card mới
-        const card = await db.Card.create({
-            ...data,
-            uuid: uuidv4(),
-            slug: slugify(data.title, { lower: true }),
-            shortLink: nanoid(8),
-        });
+        const card = await db.Card.create(data);
 
         // Cập nhật cardOrderIds trong column tương ứng
         const column = await db.Column.findByPk(data.columnId);
@@ -114,7 +90,7 @@ const store = async (data, userId) => {
         const currentOrder = Array.isArray(column.cardOrderIds) ? column.cardOrderIds : [];
 
         await column.update({
-            cardOrderIds: [...currentOrder, card.uuid],
+            cardOrderIds: [card.uuid, ...currentOrder],
         });
 
         // Gán user là reporter cho card
@@ -134,14 +110,11 @@ const store = async (data, userId) => {
 
 const update = async (cardId, data) => {
     try {
-        const updated = await db.Card.update(
-            { ...data, ...(data.title ? { slug: slugify(data.title, { lower: true }) } : {}) },
-            {
-                where: {
-                    id: cardId,
-                },
+        const updated = await db.Card.update(data, {
+            where: {
+                id: cardId,
             },
-        );
+        });
 
         if (updated[0]) {
             return db.Card.findOne({ where: { id: cardId } });

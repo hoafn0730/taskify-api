@@ -1,4 +1,3 @@
-import slugify from 'slugify';
 import { v4 as uuidv4 } from 'uuid';
 import db from '~/models';
 
@@ -15,7 +14,7 @@ const getOne = async (id) => {
 const store = async (data) => {
     try {
         const [column, created] = await db.Column.findOrCreate({
-            where: { ...data, uuid: uuidv4(), slug: slugify(data.title, { lower: true }) },
+            where: { ...data, uuid: uuidv4() },
         });
 
         // Update board
@@ -34,14 +33,11 @@ const store = async (data) => {
 
 const update = async (columnId, data) => {
     try {
-        const column = await db.Column.update(
-            { ...data, ...(data.title ? { slug: slugify(data.title, { lower: true }) } : {}) },
-            {
-                where: {
-                    id: columnId,
-                },
+        const column = await db.Column.update(data, {
+            where: {
+                id: columnId,
             },
-        );
+        });
 
         return column;
     } catch (error) {

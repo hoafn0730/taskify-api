@@ -117,43 +117,71 @@ const getBoardBySlug = async (slug) => {
 };
 
 const store = async (data) => {
+    const transaction = await db.sequelize.transaction();
+
     try {
-        // 1. Upload ảnh
-        const { secure_url } = await CloudinaryProvider.uploadFile(data.image);
+        // 1. Validate input data
+        if (!data.title || !data.userId) {
+            throw new Error('Title and userId are required');
+        }
 
-        // 2. Tạo slug và shortLink
-        const slug = slugify(data.title, { lower: true });
-        const shortLink = nanoid(8);
-
-        // 3. Chuẩn bị dữ liệu tạo Board
+        // 2. Chuẩn bị dữ liệu board
         const boardData = {
             title: data.title,
-            description: data.description,
-            type: data.type,
-            image: secure_url,
-            tags: data.tags.join(','),
-            slug,
-            shortLink,
+            description: data.description || '',
+            type: data.type || 'kanban',
+            tags: Array.isArray(data.tags) ? data.tags.join(',') : '',
         };
 
-        // 4. Tạo hoặc tìm board
-        const [board, created] = await db.Board.findOrCreate({
-            where: { slug, shortLink },
-            defaults: boardData,
+        // 3. Upload ảnh nếu có (bất đồng bộ)
+        let imageUploadPromise = null;
+        if (data.image) {
+            imageUploadPromise = CloudinaryProvider.uploadFile(data.image);
+        }
+
+        // 4. Tìm workspace song song với upload ảnh
+        const workspacePromise = db.Workspace.findOne({
+            where: { userId: data.userId },
+            transaction,
         });
 
-        if (!created) return { message: 'Instance already exists!' };
+        // 5. Chờ các promises hoàn thành
+        const [imageResult, workspace] = await Promise.all([imageUploadPromise, workspacePromise]);
 
-        // 5. Thêm members (loại bỏ trùng và chủ sở hữu)
-        const uniqueMembers = [...new Set(data.members)].filter((id) => id !== data.userId);
+        if (!workspace) {
+            throw new Error('Workspace not found');
+        }
+
+        // 6. Thêm URL ảnh vào boardData nếu có
+        if (imageResult) {
+            boardData.image = imageResult.secure_url;
+        }
+
+        // 7. Tạo board với where condition để tránh trùng lặp
+        const [board, created] = await db.Board.findOrCreate({
+            where: {
+                title: data.title,
+                // Có thể thêm điều kiện khác để tránh trùng lặp
+                // userId: data.userId // nếu board thuộc về user cụ thể
+            },
+            defaults: boardData,
+            transaction,
+        });
+
+        if (!created) {
+            await transaction.rollback();
+            return {
+                success: false,
+                message: 'Board with this title already exists!',
+                board: null,
+            };
+        }
+
+        // 8. Chuẩn bị member data
+        const uniqueMembers = data.members ? [...new Set(data.members)].filter((id) => id !== data.userId && id) : [];
 
         const memberData = [
-            ...uniqueMembers.map((userId) => ({
-                userId,
-                objectId: board.id,
-                objectType: 'board',
-                active: true,
-            })),
+            // Owner
             {
                 userId: data.userId,
                 role: 'owner',
@@ -161,23 +189,61 @@ const store = async (data) => {
                 objectType: 'board',
                 active: true,
             },
+            // Other members
+            ...uniqueMembers.map((userId) => ({
+                userId,
+                role: 'member', // Thêm role mặc định
+                objectId: board.id,
+                objectType: 'board',
+                active: true,
+            })),
         ];
 
-        await db.Member.bulkCreate(memberData);
+        // 9. Thực hiện các operations song song
+        const [members] = await Promise.all([
+            // Tạo members
+            db.Member.bulkCreate(memberData, {
+                transaction,
+                ignoreDuplicates: true, // Bỏ qua nếu đã tồn tại
+            }),
 
-        // 6. Thêm board vào workspace
-        const workspace = await db.Workspace.findOne({ where: { userId: data.userId } });
-        if (!workspace) throw new Error('Workspace not found');
+            // Thêm board vào workspace
+            db.WorkspaceBoard.create(
+                {
+                    workspaceId: workspace.id,
+                    boardId: board.id,
+                    starred: false,
+                    lastView: new Date(),
+                },
+                { transaction },
+            ),
+        ]);
 
-        await workspace.addBoard(board, {
-            through: {
-                starred: false,
-                lastView: new Date(),
-            },
+        await transaction.commit();
+
+        // 10. Trả về board với thông tin đầy đủ
+        const fullBoard = await db.Board.findByPk(board.id, {
+            include: [
+                {
+                    model: db.User,
+                    as: 'members',
+                    attributes: ['id', 'displayName', 'email', 'avatar'],
+                    through: { attributes: ['role', 'active'] },
+                },
+            ],
         });
 
-        return board;
+        return {
+            success: true,
+            message: 'Board created successfully',
+            board: fullBoard,
+        };
     } catch (error) {
+        await transaction.rollback();
+
+        // Log error for debugging
+        console.error('Error creating board:', error);
+
         throw error;
     }
 };

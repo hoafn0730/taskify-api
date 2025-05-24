@@ -7,6 +7,11 @@ const store = async (req, res, next) => {
         boardId: Joi.number().required(),
         columnId: Joi.number().required(),
         title: Joi.string().required().min(3).max(50).trim().strict(),
+        priority: Joi.string().valid('low', 'medium', 'high').default('medium'),
+        dueStart: Joi.date().optional(),
+        dueDate: Joi.date().optional(),
+        description: Joi.string().optional().allow(''),
+        labels: Joi.string().default('[]'),
     });
 
     try {

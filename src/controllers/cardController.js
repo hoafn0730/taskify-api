@@ -39,7 +39,17 @@ const getOneBySlug = async (req, res, next) => {
 const getUpNext = async (req, res, next) => {
     try {
         const cards = await cardService.get({
-            where: { dueDate: { [Op.not]: null, [Op.gt]: new Date() }, dueComplete: false, archivedAt: null },
+            where: {
+                dueDate: {
+                    [Op.not]: null,
+                    [Op.gte]: new Date(),
+                },
+            },
+            include: {
+                model: db.Board,
+                as: 'board',
+                attributes: ['id', 'title', 'slug', 'boardCode'],
+            },
             order: [['dueDate', 'ASC']],
         });
 
