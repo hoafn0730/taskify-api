@@ -57,6 +57,16 @@ module.exports = (sequelize, DataTypes) => {
                 constraints: false,
                 as: 'cover',
             });
+
+            // Polymorphic association với Comment
+            // this.hasMany(models.Comment, {
+            //     foreignKey: 'commentableId',
+            //     constraints: false,
+            //     scope: {
+            //         commentableType: 'Card',
+            //     },
+            //     as: 'comments',
+            // });
         }
     }
     Card.init(

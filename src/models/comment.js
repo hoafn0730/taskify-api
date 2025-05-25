@@ -1,28 +1,65 @@
 'use strict';
 const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
     class Comment extends Model {
-        /**
-         * Helper method for defining associations.
-         * This method is not a part of Sequelize lifecycle.
-         * The `models/index` file will call this method automatically.
-         */
         static associate(models) {
-            // define association here
-            this.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
+            // Polymorphic associations
+            Comment.belongsTo(models.Post, {
+                foreignKey: 'commentableId',
+                constraints: false,
+                scope: {
+                    commentableType: 'Post',
+                },
+            });
+
+            Comment.belongsTo(models.Card, {
+                foreignKey: 'commentableId',
+                constraints: false,
+                scope: {
+                    commentableType: 'Card',
+                },
+            });
         }
     }
+
     Comment.init(
         {
-            userId: DataTypes.INTEGER,
-            commentableId: DataTypes.INTEGER,
-            commentableType: DataTypes.STRING,
-            comment: DataTypes.STRING,
+            commentableId: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            commentableType: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                validate: {
+                    isIn: [['Post', 'Card']],
+                },
+            },
+            authorName: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            authorAvatar: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            message: {
+                type: DataTypes.TEXT,
+                allowNull: false,
+            },
+            postedAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW,
+            },
         },
         {
             sequelize,
             modelName: 'Comment',
+            paranoid: true,
         },
     );
+
     return Comment;
 };

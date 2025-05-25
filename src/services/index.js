@@ -11,6 +11,8 @@ export const commentService = createService(db.Comment);
 export const userService = createService(db.User);
 export const notificationService = createService(db.Notification);
 export const categoryService = createService(db.Category);
+export const postService = createService(db.Post);
+
 export const workspaceService = createService(db.Workspace);
 export const transactionService = createService(db.Transaction);
 export const invoiceService = createService(db.Invoice);

@@ -10,15 +10,17 @@ import columnRouter from './columnRouter';
 import cardRouter from './cardRouter';
 import userRouter from './userRouter';
 import checklistRouter from './checklistRouter';
+import postRouter from './postRouter';
+import paymentRouter from './paymentRouter';
+import authRouter from './authRouter';
+import calendarRouter from './calendarRouter';
+
 import commentRouter from './commentRouter';
 import notificationRouter from './notificationRouter';
 import workspaceRouter from './workspaceRouter';
-import paymentRouter from './paymentRouter';
 import categoryRouter from './categoryRouter';
-import authRouter from './authRouter';
 import mailRouter from './mailRouter';
 import chatRouter from './chatRouter';
-import calendarRouter from './calendarRouter';
 
 const router = express.Router();
 
@@ -50,6 +52,7 @@ router.use('/checklists', checklistRouter);
 router.use('/users', userRouter);
 router.use('/payment', paymentRouter);
 router.use('/calendar', calendarRouter);
+router.use('/posts', postRouter);
 
 router.use('/comments', commentRouter);
 router.use('/notifications', notificationRouter);
