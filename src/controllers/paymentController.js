@@ -1,17 +1,17 @@
 import { StatusCodes } from 'http-status-codes';
-import { transactionService } from '~/services';
+import { invoiceService, transactionService } from '~/services';
 
 const get = async (req, res, next) => {
     try {
         const page = req.query.page;
         const pageSize = req.query.pageSize;
-        const query = req.query.q;
-        const transactions = await transactionService.get({ page, pageSize, query });
+
+        const invoices = await invoiceService.get({ page, pageSize });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: transactions,
+            data: invoices,
         });
     } catch (error) {
         next(error);
@@ -21,6 +21,7 @@ const get = async (req, res, next) => {
 const store = async (req, res, next) => {
     const data = req.body;
     try {
+        // Tạo transaction trước
         const transaction = await transactionService.store({
             userId: req.user.id,
             gateway: data.gateway,
@@ -35,10 +36,26 @@ const store = async (req, res, next) => {
             body: data.id,
         });
 
+        // Tạo invoice tương ứng
+        const invoice = await invoiceService.store({
+            userId: req.user.id,
+            code: `INV-${data.code}`,
+            amount: data.transferAmount,
+            status: 'paid',
+            dueDate: data.transactionDate || new Date(),
+            paidAt: new Date(),
+        });
+
+        // Cập nhật invoiceId cho transaction
+        await transaction.update({ invoiceId: invoice.id });
+
         res.status(StatusCodes.CREATED).json({
             statusCode: StatusCodes.CREATED,
             message: StatusCodes[StatusCodes.CREATED],
-            data: transaction,
+            data: {
+                transaction,
+                invoice,
+            },
         });
     } catch (error) {
         next(error);

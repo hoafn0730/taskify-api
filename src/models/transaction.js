@@ -9,11 +9,16 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            Transaction.belongsTo(models.Invoice, {
+                foreignKey: 'invoiceId',
+                as: 'invoice',
+            });
         }
     }
     Transaction.init(
         {
             userId: DataTypes.INTEGER,
+            invoiceId: DataTypes.INTEGER,
             gateway: DataTypes.STRING,
             transactionDate: DataTypes.DATE,
             accountNumber: DataTypes.STRING,

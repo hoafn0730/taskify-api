@@ -187,7 +187,7 @@ const getCurrentUser = async (req, res, next) => {
         // online, offline, alway, busy
         // [ ] sau 30p se set lai offline new lastActivity > 15p
         await db.User.update(
-            { lastActivity: new Date(), status: 'online' },
+            { lastActivity: new Date(), activityStatus: 'online' },
             {
                 where: {
                     id: req.user.id,

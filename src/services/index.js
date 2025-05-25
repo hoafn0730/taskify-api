@@ -13,6 +13,7 @@ export const notificationService = createService(db.Notification);
 export const categoryService = createService(db.Category);
 export const workspaceService = createService(db.Workspace);
 export const transactionService = createService(db.Transaction);
+export const invoiceService = createService(db.Invoice);
 export const mailService = createService(db.Mail);
 export const eventService = createService(db.Event);
 export const checklistService = createService(db.Checklist).extends(checklist);

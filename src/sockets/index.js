@@ -1,11 +1,14 @@
-const connection = (socket) => {
-    console.log(socket.id);
+const users = {};
 
-    socket.on('disconnect', () => {
-        console.log(`User disconnect id is ${socket.id}`);
+const connection = (socket) => {
+    socket.on('login', function (data) {
+        // saving userId to object with socket ID
+        users[socket.id] = data.userId;
     });
 
-    // event on here
+    socket.on('disconnect', () => {
+        delete users[socket.id];
+    });
 
     socket.on('say to someone', (id, msg) => {
         // send a private message to the socket with the given id

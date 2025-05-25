@@ -57,7 +57,11 @@ module.exports = (sequelize, DataTypes) => {
             avatar: DataTypes.STRING,
             type: DataTypes.STRING,
             role: { type: DataTypes.STRING, defaultValue: 'user' },
-            status: DataTypes.STRING,
+            status: {
+                type: DataTypes.ENUM('active', 'pending', 'banned'),
+                allowNull: false,
+                defaultValue: 'pending',
+            },
             lastActivity: DataTypes.DATE, // Thêm chỉ trường xác thực email
             verified: {
                 type: DataTypes.BOOLEAN,
@@ -66,6 +70,11 @@ module.exports = (sequelize, DataTypes) => {
             verifiedAt: {
                 type: DataTypes.DATE,
                 allowNull: true,
+            },
+            activityStatus: {
+                type: DataTypes.ENUM('online', 'offline', 'away'),
+                allowNull: false,
+                defaultValue: 'offline',
             },
         },
         {

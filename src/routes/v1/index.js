@@ -13,7 +13,7 @@ import checklistRouter from './checklistRouter';
 import commentRouter from './commentRouter';
 import notificationRouter from './notificationRouter';
 import workspaceRouter from './workspaceRouter';
-import transactionRouter from './transactionRouter';
+import paymentRouter from './paymentRouter';
 import categoryRouter from './categoryRouter';
 import authRouter from './authRouter';
 import mailRouter from './mailRouter';
@@ -30,10 +30,9 @@ router.get('/status', async (req, res) => {
 router.post('/webhook/seapay', (req, res) => {
     // Xử lý dữ liệu
     const data = req.body;
-    console.log('Webhook received:', data);
 
     if (data) {
-        res.io.emit('transaction-update', data);
+        res.io.emit('transaction', data);
     }
 
     // Phản hồi lại Seapay
@@ -48,16 +47,16 @@ router.use('/boards', boardRouter);
 router.use('/columns', columnRouter);
 router.use('/cards', cardRouter);
 router.use('/checklists', checklistRouter);
+router.use('/users', userRouter);
+router.use('/payment', paymentRouter);
+router.use('/calendar', calendarRouter);
 
 router.use('/comments', commentRouter);
 router.use('/notifications', notificationRouter);
-router.use('/users', userRouter);
 router.use('/workspaces', workspaceRouter);
-router.use('/transactions', transactionRouter);
 router.use('/categories', categoryRouter);
 router.use('/mails', mailRouter);
 router.use('/chat', chatRouter);
-router.use('/calendar', calendarRouter);
 
 router.get('/get-by-short-link', async (req, res, next) => {
     const shortLink = req.query.shortLink;
