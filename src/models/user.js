@@ -42,6 +42,16 @@ module.exports = (sequelize, DataTypes) => {
                 constraints: false,
                 as: 'cards',
             });
+            this.belongsToMany(models.Team, {
+                through: {
+                    model: models.Member,
+                    scope: { objectType: 'team' },
+                },
+                foreignKey: 'userId',
+                otherKey: 'objectId',
+                constraints: false,
+                as: 'teams',
+            });
             this.hasMany(models.Member, { foreignKey: 'userId' });
         }
     }

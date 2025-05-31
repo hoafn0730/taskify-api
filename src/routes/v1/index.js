@@ -14,6 +14,7 @@ import postRouter from './postRouter';
 import paymentRouter from './paymentRouter';
 import authRouter from './authRouter';
 import calendarRouter from './calendarRouter';
+import memberRouter from './memberRouter';
 
 import commentRouter from './commentRouter';
 import notificationRouter from './notificationRouter';
@@ -53,6 +54,7 @@ router.use('/users', userRouter);
 router.use('/payment', paymentRouter);
 router.use('/calendar', calendarRouter);
 router.use('/posts', postRouter);
+router.use('/members', memberRouter);
 
 router.use('/comments', commentRouter);
 router.use('/notifications', notificationRouter);

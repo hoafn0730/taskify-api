@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             this.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
             this.belongsTo(models.Board, { foreignKey: 'objectId', constraints: false });
             this.belongsTo(models.Card, { foreignKey: 'objectId', constraints: false });
+            this.belongsTo(models.Team, { foreignKey: 'objectId', constraints: false });
         }
     }
     Member.init(

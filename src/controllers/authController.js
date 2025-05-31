@@ -170,6 +170,7 @@ const getCurrentUser = async (req, res, next) => {
                         where: { status: { [Op.in]: ['accepted', 'pending'] } },
                     },
                 },
+
                 // {
                 //     model: db.User,
                 //     as: 'friendOf',
