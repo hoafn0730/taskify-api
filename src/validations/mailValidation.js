@@ -4,16 +4,15 @@ import ApiError from '~/utils/ApiError';
 
 const save = async (req, res, next) => {
     const correctCondition = Joi.object({
-        id: Joi.number().optional(),
+        id: Joi.number().optional().allow(null),
         to: Joi.string()
             .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
-            .optional(),
-        from: Joi.string()
-            .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
-            .required(),
-        folder: Joi.string().required().min(3).max(50).trim().strict(),
-        subject: Joi.string().required().min(3).max(100).trim().strict(),
-        message: Joi.string().required().trim().strict(),
+            .optional()
+            .allow(''),
+        from: Joi.number().required(),
+        folder: Joi.string().optional().min(3).max(50).trim().allow(''),
+        subject: Joi.string().optional().min(3).max(100).trim().allow(''),
+        message: Joi.string().optional().trim().allow(''),
     });
 
     try {

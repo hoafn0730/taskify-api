@@ -10,13 +10,24 @@ module.exports = (sequelize, DataTypes) => {
 
         static associate(models) {
             // define association here
+            // Mail belongs to User (sender)
+            Mail.belongsTo(models.User, {
+                foreignKey: 'from',
+                as: 'sender',
+            });
+
+            // Mail belongs to User (recipient)
+            Mail.belongsTo(models.User, {
+                foreignKey: 'to',
+                as: 'recipient',
+            });
         }
     }
     Mail.init(
         {
-            to: DataTypes.STRING,
-            from: DataTypes.STRING,
-            folder: DataTypes.STRING,
+            to: DataTypes.INTEGER,
+            from: DataTypes.INTEGER,
+            folder: { type: DataTypes.STRING, defaultValue: 'drafts' },
             subject: DataTypes.STRING,
             message: DataTypes.STRING,
         },

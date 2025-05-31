@@ -9,17 +9,46 @@ import { mailService } from '~/services';
 const transporter = nodemailer.createTransport({
     service: 'gmail', // hoặc smtp riêng nếu bạn có
     auth: {
-        user: 'hoantran0730@gmail.com', // email gửi
-        pass: 'process.env.MAIL_PASS', // mật khẩu ứng dụng
+        user: process.env.GMAIL_ADDRESS, // email gửi
+        pass: process.env.GMAIL_APP_PASSWORD, // mật khẩu ứng dụng
     },
 });
 
 const getList = async (req, res, next) => {
     try {
-        const labels = req.query.label.split(',');
-        const page = req.query.page;
-        const pageSize = req.query.pageSize;
-        const mails = await mailService.get({ page, pageSize, where: { folder: { [Op.in]: labels } } });
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 20;
+        const userId = req.user.id; // Assuming user is attached to request
+
+        const whereCondition = {
+            [Op.or]: [
+                { to: userId }, // Received mails
+                { from: userId }, // Sent mails
+            ],
+        };
+
+        // Only add folder condition if label is not 'all'
+        if (req.query.label && req.query.label !== 'all') {
+            const labels = req.query.label.split(',');
+            whereCondition.folder = { [Op.in]: labels };
+        }
+
+        const mails = await mailService.get({
+            page,
+            pageSize,
+            where: whereCondition,
+            include: [
+                {
+                    association: 'sender',
+                    attributes: ['id', 'email', 'displayName', 'avatar'],
+                },
+                {
+                    association: 'recipient',
+                    attributes: ['id', 'email', 'displayName', 'avatar'],
+                },
+            ],
+            order: [['createdAt', 'DESC']],
+        });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
@@ -35,7 +64,19 @@ const getList = async (req, res, next) => {
 const getOne = async (req, res, next) => {
     try {
         const mailId = req.params.id;
-        const mail = await mailService.getOne({ where: { id: mailId } });
+        const mail = await mailService.getOne({
+            where: { id: mailId },
+            include: [
+                {
+                    association: 'sender',
+                    attributes: ['id', 'email', 'displayName', 'avatar'],
+                },
+                {
+                    association: 'recipient',
+                    attributes: ['id', 'email', 'displayName', 'avatar'],
+                },
+            ],
+        });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
@@ -60,10 +101,18 @@ const getLabels = async (req, res, next) => {
 };
 
 const save = async (req, res, next) => {
-    const { id, ...rest } = req.body;
-
     try {
-        const [mail, created] = await db.Mail.upsert({ id, ...rest }, { returning: true });
+        const { id, ...rest } = req.body;
+        const user = await db.User.findOne({ where: { email: rest.to } });
+
+        if (!user) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                statusCode: StatusCodes.NOT_FOUND,
+                message: 'Người nhận không tồn tại',
+            });
+        }
+
+        const [mail, created] = await db.Mail.upsert({ id, ...rest, to: user.id }, { returning: true });
 
         res.status(created ? StatusCodes.CREATED : StatusCodes.OK).json({
             statusCode: created ? StatusCodes.CREATED : StatusCodes.OK,
@@ -77,20 +126,32 @@ const save = async (req, res, next) => {
 
 const send = async (req, res, next) => {
     try {
-        // const { to, subject, html, mailId } = req.body;
+        const mailId = req.params.id;
+        const mail = await mailService.getOne({ where: { id: mailId } });
+        if (!mail) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                statusCode: StatusCodes.NOT_FOUND,
+                message: 'Email không tồn tại',
+            });
+        }
+        const user = await db.User.findOne({ where: { id: mail.to } });
 
-        const to = 'hoantran0730@gmail.com';
-        const subject = 'Chào bạn!';
-        const html = '<h1>Cảm ơn bạn đã đăng ký</h1>';
+        if (!mail || !user) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                statusCode: StatusCodes.NOT_FOUND,
+                message: !mail ? 'Email không tồn tại' : 'Người nhận không tồn tại',
+            });
+        }
 
-        const info = await transporter.sendMail({
-            from: `"MyApp" <${'hoantran0730@gmail.com'}>`,
-            to,
-            subject,
-            html,
-        });
+        const mailOptions = {
+            from: `"MyApp" <${process.env.GMAIL_ADDRESS}>`,
+            to: user.email,
+            subject: mail.subject || 'Thông báo từ MyApp',
+            html: mail.message || '<p>Đây là nội dung email từ MyApp.</p>',
+        };
 
-        // await db.Mail.update({ type: 'sent' }, { where: { id: mailId } });
+        const info = await transporter.sendMail(mailOptions);
+        await db.Mail.update({ folder: 'sent' }, { where: { id: mailId } });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
