@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import ApiError from '~/utils/ApiError';
 
-const WHITELIST_DOMAINS = process.env.CORS_ORIGIN.split(',');
+const WHITELIST_DOMAINS = (process.env.CORS_ORIGIN ?? '').split(',');
 
 export const corsOptions = {
     origin: function (origin, callback) {
