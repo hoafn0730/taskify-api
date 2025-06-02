@@ -7,7 +7,7 @@ module.exports = {
         database: process.env.DB_DATABASE,
         host: process.env.DB_HOST,
         port: process.env.DB_PORT,
-        dialect: process.env.DB_CONNECTION,
+        dialect: process.env.DB_CONNECTION || 'mysql',
         logging: false,
     },
     test: {
@@ -16,7 +16,7 @@ module.exports = {
         database: process.env.DB_DATABASE,
         host: process.env.DB_HOST,
         port: process.env.DB_PORT,
-        dialect: process.env.DB_CONNECTION,
+        dialect: process.env.DB_CONNECTION || 'mysql',
         logging: false,
     },
     production: {
@@ -25,7 +25,7 @@ module.exports = {
         database: process.env.DB_DATABASE,
         host: process.env.DB_HOST,
         port: process.env.DB_PORT,
-        dialect: process.env.DB_CONNECTION,
+        dialect: process.env.DB_CONNECTION || 'mysql',
         logging: false,
         dialectOptions: {
             ssl: {
