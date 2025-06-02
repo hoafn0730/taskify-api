@@ -28,7 +28,7 @@ const update = async (req, res, next) => {
         boardId: Joi.number(),
         columnId: Joi.number(),
         title: Joi.string().min(3).max(50).trim().strict(),
-        description: Joi.string().min(3).trim().strict().allow(null),
+        description: Joi.string().min(3).trim().optional().allow(''),
         dueDate: Joi.date().allow(null),
         dueComplete: Joi.boolean().strict(),
         dueReminder: Joi.number().strict(),
