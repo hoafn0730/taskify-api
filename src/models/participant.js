@@ -9,13 +9,42 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Participant.belongsTo(models.Conversation, { foreignKey: 'conversationId' });
+            Participant.belongsTo(models.User, {
+                foreignKey: 'userId',
+                as: 'user',
+            });
+            Participant.belongsTo(models.Conversation, {
+                foreignKey: 'conversationId',
+                as: 'conversation',
+            });
         }
     }
     Participant.init(
         {
-            userId: DataTypes.STRING,
-            conversationId: DataTypes.STRING,
+            userId: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Users',
+                    key: 'id',
+                },
+            },
+            conversationId: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Conversations',
+                    key: 'id',
+                },
+            },
+            role: {
+                type: DataTypes.ENUM('admin', 'member'),
+                defaultValue: 'member',
+            },
+            lastReadAt: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             sequelize,

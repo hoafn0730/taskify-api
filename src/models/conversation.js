@@ -9,15 +9,43 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Conversation.hasMany(models.Participant, { foreignKey: 'conversationId' });
-            Conversation.hasMany(models.Message, { foreignKey: 'conversationId' });
+            Conversation.hasMany(models.Message, {
+                foreignKey: 'conversationId',
+                as: 'messages',
+            });
+            Conversation.hasMany(models.Participant, {
+                foreignKey: 'conversationId',
+                as: 'participants',
+            });
+            Conversation.belongsTo(models.User, {
+                foreignKey: 'createdBy',
+                as: 'creator',
+            });
         }
     }
     Conversation.init(
         {
             title: DataTypes.STRING,
-            type: DataTypes.STRING,
-            unreadCount: DataTypes.INTEGER,
+            type: {
+                type: DataTypes.ENUM('private', 'group'),
+                defaultValue: 'private',
+            },
+            lastMessageAt: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
+            createdBy: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Users',
+                    key: 'id',
+                },
+            },
+            metadata: {
+                type: DataTypes.JSON,
+                defaultValue: {},
+            },
         },
         {
             sequelize,

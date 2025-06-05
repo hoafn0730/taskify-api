@@ -22,7 +22,31 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: corsOptions });
 const swaggerDocs = YAML.load('./swagger.yaml');
 
+// Socket middleware để xác thực JWT
+io.use(async (socket, next) => {
+    try {
+        //         const token = socket.handshake.auth.token;
+        //
+        //         if (!token) {
+        //             return next(new Error('Authentication error'));
+        //         }
+        //
+        //         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        //         const user = await User.findById(decoded.userId).select('-password');
+        //
+        //         if (!user) {
+        //             return next(new Error('User not found'));
+        //         }
+        //
+        //         socket.userId = user._id.toString();
+        //         socket.user = user;
+        next();
+    } catch (error) {
+        next(new Error('Authentication error'));
+    }
+});
 io.on('connection', sockets.connection);
+
 connection();
 app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store');

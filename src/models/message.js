@@ -9,15 +9,31 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Message.belongsTo(models.Conversation, { foreignKey: 'conversationId' });
+            Message.belongsTo(models.User, {
+                foreignKey: 'senderId',
+                as: 'sender',
+            });
+            Message.belongsTo(models.Conversation, {
+                foreignKey: 'conversationId',
+            });
+            Message.belongsTo(models.Message, {
+                foreignKey: 'replyTo',
+                as: 'repliedMessage',
+            });
         }
     }
     Message.init(
         {
-            body: DataTypes.STRING,
-            contentType: DataTypes.STRING,
-            senderId: DataTypes.STRING,
+            senderId: DataTypes.INTEGER,
             conversationId: DataTypes.STRING,
+            roomId: DataTypes.STRING,
+            content: DataTypes.TEXT,
+            contentType: { type: DataTypes.STRING, defaultValue: 'text' },
+            replyTo: DataTypes.INTEGER,
+            readBy: {
+                type: DataTypes.JSON,
+                defaultValue: [],
+            },
         },
         {
             sequelize,

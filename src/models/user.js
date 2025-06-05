@@ -72,7 +72,7 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 defaultValue: 'pending',
             },
-            lastActivity: DataTypes.DATE, // Thêm chỉ trường xác thực email
+
             verified: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false,
@@ -85,6 +85,12 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.ENUM('online', 'offline', 'away'),
                 allowNull: false,
                 defaultValue: 'offline',
+            },
+            lastActivity: DataTypes.DATE, // Thêm chỉ trường xác thực email
+            socketId: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                defaultValue: null,
             },
         },
         {
