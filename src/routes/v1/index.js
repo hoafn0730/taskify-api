@@ -44,7 +44,7 @@ router.post('/webhook/seapay', (req, res) => {
 
 router.use('/auth', authRouter);
 
-router.all('*', authMiddleware.isAuthorized);
+// router.all('*', authMiddleware.isAuthorized);
 
 router.use('/boards', boardRouter);
 router.use('/columns', columnRouter);
@@ -61,7 +61,7 @@ router.use('/notifications', notificationRouter);
 router.use('/workspaces', workspaceRouter);
 router.use('/categories', categoryRouter);
 router.use('/mails', mailRouter);
-router.use('/chat', chatRouter);
+router.use('/conversations', chatRouter);
 
 router.get('/get-by-short-link', async (req, res, next) => {
     const shortLink = req.query.shortLink;

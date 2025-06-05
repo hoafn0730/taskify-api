@@ -20,6 +20,29 @@ const get = async (req, res, next) => {
     }
 };
 
+const getOnline = async (req, res, next) => {
+    try {
+        const page = req.query.page;
+        const pageSize = req.query.pageSize;
+
+        const users = await userService.get({
+            page,
+            pageSize,
+            where: { activityStatus: 'online' },
+            all: true,
+            attributes: ['id', 'username', 'displayName', 'avatar', 'activityStatus'],
+        });
+
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: users,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const getOne = async (req, res, next) => {
     try {
         const userId = req.params.id;
@@ -85,4 +108,4 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export default { get, getOne, store, update, destroy };
+export default { get, getOnline, getOne, store, update, destroy };

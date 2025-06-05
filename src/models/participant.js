@@ -32,10 +32,6 @@ module.exports = (sequelize, DataTypes) => {
             conversationId: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
-                references: {
-                    model: 'Conversations',
-                    key: 'id',
-                },
             },
             role: {
                 type: DataTypes.ENUM('admin', 'member'),

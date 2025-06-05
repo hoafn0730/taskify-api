@@ -14,6 +14,8 @@ export const notificationService = createService(db.Notification);
 export const categoryService = createService(db.Category);
 export const postService = createService(db.Post);
 export const memberService = createService(db.Member); //.extends(member);
+export const conversationService = createService(db.Conversation);
+export const messageService = createService(db.Message);
 
 export const workspaceService = createService(db.Workspace);
 export const transactionService = createService(db.Transaction);

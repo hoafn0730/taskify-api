@@ -14,6 +14,7 @@ import APIs_V1 from './routes/v1';
 import { corsOptions } from './config/cors';
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware';
 import { close, connection } from './models';
+import socketMiddleware from './middlewares/socketMiddleware';
 
 const hostname = process.env.HOST || 'localhost';
 const port = process.env.PORT || 8017;
@@ -22,29 +23,10 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: corsOptions });
 const swaggerDocs = YAML.load('./swagger.yaml');
 
+global.io = io;
+
 // Socket middleware để xác thực JWT
-io.use(async (socket, next) => {
-    try {
-        //         const token = socket.handshake.auth.token;
-        //
-        //         if (!token) {
-        //             return next(new Error('Authentication error'));
-        //         }
-        //
-        //         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        //         const user = await User.findById(decoded.userId).select('-password');
-        //
-        //         if (!user) {
-        //             return next(new Error('User not found'));
-        //         }
-        //
-        //         socket.userId = user._id.toString();
-        //         socket.user = user;
-        next();
-    } catch (error) {
-        next(new Error('Authentication error'));
-    }
-});
+io.use(socketMiddleware);
 io.on('connection', sockets.connection);
 
 connection();

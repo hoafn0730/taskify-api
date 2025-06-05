@@ -5,6 +5,8 @@ import { userValidation } from '~/validations/userValidation';
 
 const router = express.Router();
 
+router.get('/online', userController.getOnline);
+
 router.all('*', authMiddleware.checkRole('admin', 'owner'));
 
 router.get('/', userController.get);

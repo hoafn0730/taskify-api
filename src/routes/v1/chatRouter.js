@@ -4,9 +4,10 @@ import chatController from '~/controllers/chatController';
 
 const router = express.Router();
 
-// router.post('/conversations', chatController.createConversation);
+router.get('/', chatController.get);
+router.get('/:id', chatController.getOne);
+router.get('/:id/messages', chatController.getMessages);
+router.post('/', chatController.store);
 // router.post('/messages', chatController.sendMessage);
-// router.get('/conversations/:userId', chatController.getConversationsByUser);
-// router.get('/conversations/:conversationId/messages', chatController.getMessages);
 
 export default router;
