@@ -1,5 +1,5 @@
 import db from '~/models';
-import { conversationService, messageService, userService } from '~/services';
+import { conversationService, userService } from '~/services';
 
 const users = new Map(); // Store connected users
 
@@ -29,6 +29,7 @@ const connection = (socket) => {
 
             // Get user conversations with participants and last message
             const conversations = await conversationService.get({
+                all: true,
                 include: [
                     {
                         model: db.Participant,
@@ -119,6 +120,7 @@ const connection = (socket) => {
 
             if (!participant) {
                 socket.emit('error', { message: 'Access denied' });
+                console.log('🚀 ~ socket.on ~ savedMessage:', savedMessage);
                 return;
             }
 

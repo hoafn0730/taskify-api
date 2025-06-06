@@ -8,6 +8,5 @@ router.get('/', chatController.get);
 router.get('/:id', chatController.getOne);
 router.get('/:id/messages', chatController.getMessages);
 router.post('/', chatController.store);
-// router.post('/messages', chatController.sendMessage);
 
 export default router;

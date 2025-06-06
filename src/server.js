@@ -20,8 +20,8 @@ const hostname = process.env.HOST || 'localhost';
 const port = process.env.PORT || 8017;
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, { cors: corsOptions });
 const swaggerDocs = YAML.load('./swagger.yaml');
+const io = new Server(httpServer, { cors: corsOptions });
 
 global.io = io;
 
