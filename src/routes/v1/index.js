@@ -15,13 +15,14 @@ import paymentRouter from './paymentRouter';
 import authRouter from './authRouter';
 import calendarRouter from './calendarRouter';
 import memberRouter from './memberRouter';
+import invoiceRouter from './invoiceRouter';
+import chatRouter from './chatRouter';
 
 import commentRouter from './commentRouter';
 import notificationRouter from './notificationRouter';
 import workspaceRouter from './workspaceRouter';
 import categoryRouter from './categoryRouter';
 import mailRouter from './mailRouter';
-import chatRouter from './chatRouter';
 
 const router = express.Router();
 
@@ -55,6 +56,7 @@ router.use('/payment', paymentRouter);
 router.use('/calendar', calendarRouter);
 router.use('/posts', postRouter);
 router.use('/members', memberRouter);
+router.use('/invoices', invoiceRouter);
 
 router.use('/comments', commentRouter);
 router.use('/notifications', notificationRouter);

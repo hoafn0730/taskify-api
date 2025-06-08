@@ -5,14 +5,29 @@ const get = async (req, res, next) => {
     try {
         const page = req.query.page;
         const pageSize = req.query.pageSize;
-        const userId = req.user.id;
 
-        const invoices = await invoiceService.get({ page, pageSize, where: { userId } });
+        const invoices = await invoiceService.get({ page, pageSize });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
             data: invoices,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getOne = async (req, res, next) => {
+    try {
+        const invoiceId = req.params.id;
+
+        const invoice = await invoiceService.getOne({ where: { id: invoiceId } });
+
+        res.status(StatusCodes.OK).json({
+            statusCode: StatusCodes.OK,
+            message: StatusCodes[StatusCodes.OK],
+            data: invoice,
         });
     } catch (error) {
         next(error);
@@ -93,4 +108,4 @@ const destroy = async (req, res, next) => {
     }
 };
 
-export default { get, store, update, destroy };
+export default { get, getOne, store, update, destroy };

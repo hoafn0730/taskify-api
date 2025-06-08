@@ -3,11 +3,12 @@ import createService from '~/utils/createService';
 import checklist from './checklistService';
 import board from './boardService';
 import card from './cardService';
-import member from './memberService';
+import column from './columnService';
 
 // Tạo service cho từng model
 export const cardService = createService(db.Card).extends(card);
 export const boardService = createService(db.Board).extends(board);
+export const columnService = createService(db.Column).extends(column);
 export const commentService = createService(db.Comment);
 export const userService = createService(db.User);
 export const notificationService = createService(db.Notification);

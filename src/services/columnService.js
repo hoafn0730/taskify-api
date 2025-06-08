@@ -1,16 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import db from '~/models';
 
-const getOne = async (id) => {
-    try {
-        const data = await db.Column.findOne({ where: { id } });
-
-        return data;
-    } catch (error) {
-        throw error;
-    }
-};
-
 const store = async (data) => {
     try {
         const [column, created] = await db.Column.findOrCreate({
@@ -82,7 +72,6 @@ const destroy = async (columnId) => {
 };
 
 export default {
-    getOne,
     store,
     update,
     destroy,

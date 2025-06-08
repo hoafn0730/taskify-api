@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { isEmpty } from 'lodash';
 import db from '~/models';
-import { boardService, cardService } from '~/services';
+import { boardService, cardService, columnService } from '~/services';
 import ApiError from '~/utils/ApiError';
 
 const checkMemberRole = (...roles) => {
@@ -27,8 +27,18 @@ const checkMemberRole = (...roles) => {
                 }
 
                 boardId = card.boardId;
-            }
+            } else if (req.baseUrl.includes('column')) {
+                const column = await columnService.getOne({
+                    where: req.params,
+                    attributes: ['boardId'],
+                });
 
+                if (!column) {
+                    return next(new ApiError(StatusCodes.NOT_FOUND, 'Board not found!'));
+                }
+
+                boardId = column.boardId;
+            }
             // For board routes
             else if (req.baseUrl.includes('board')) {
                 const board = await boardService.getOne({

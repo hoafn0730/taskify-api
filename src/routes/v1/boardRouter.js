@@ -28,21 +28,16 @@ router.put('/:boardId/members/:memberId/permission', boardController.changePermi
 
 router.post('/generate', boardController.generate);
 
-router.put(
-    '/:id',
-    //  boardMiddleware.checkMemberRole('admin', 'owner'),
-    boardValidation.update,
-    boardController.update,
-);
+router.put('/:id', boardMiddleware.checkMemberRole('admin', 'owner'), boardValidation.update, boardController.update);
 router.put(
     '/:id/moving-card',
-    // boardMiddleware.checkMemberRole('admin', 'owner'),
+    boardMiddleware.checkMemberRole('admin', 'owner'),
     boardValidation.moveCardToDifferentColumn,
     boardController.moveCardToDifferentColumn,
 );
 router.delete(
     '/:id',
-    // boardMiddleware.checkMemberRole('admin', 'owner'),
+    boardMiddleware.checkMemberRole('admin', 'owner'),
     boardValidation.destroy,
     boardController.destroy,
 );
