@@ -36,7 +36,7 @@ router.post('/webhook/seapay', (req, res) => {
     const data = req.body;
 
     if (data) {
-        res.io.emit('transaction', data);
+        global.io.emit('transaction', data);
     }
 
     // Phản hồi lại Seapay
