@@ -58,7 +58,6 @@ module.exports = (sequelize, DataTypes) => {
             boardCode: {
                 type: DataTypes.STRING,
                 unique: true,
-                allowNull: false,
             },
         },
         {
@@ -146,6 +145,7 @@ module.exports = (sequelize, DataTypes) => {
                         };
 
                         board.boardCode = await generateBoardCode();
+                        console.log(board.boardCode);
                     }
                 },
 

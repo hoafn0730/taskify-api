@@ -6,7 +6,7 @@ import { columnValidation } from '~/validations/columnValidation';
 const router = express.Router();
 
 router.get('/:id', columnController.getOne);
-router.post('/', boardMiddleware.checkMemberRole('admin', 'owner'), columnValidation.store, columnController.store);
+router.post('/', columnValidation.store, columnController.store);
 router.put('/:id', boardMiddleware.checkMemberRole('admin', 'owner'), columnValidation.update, columnController.update);
 router.delete('/:id/cards', columnValidation.destroy, columnController.clear);
 router.delete('/:id', columnValidation.destroy, columnController.destroy);

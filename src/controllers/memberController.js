@@ -84,14 +84,13 @@ const store = async (req, res, next) => {
 
 const update = async (req, res, next) => {
     try {
-        const memberId = req.params.id;
-
-        const updated = await memberService.update(memberId, req.body);
+        await db.Member.update(req.body, {
+            where: { userId: req.body.userId, objectId: req.body.objectId, objectType: req.body.objectType },
+        });
 
         res.status(StatusCodes.OK).json({
             statusCode: StatusCodes.OK,
             message: StatusCodes[StatusCodes.OK],
-            data: updated,
         });
     } catch (error) {
         next(error);

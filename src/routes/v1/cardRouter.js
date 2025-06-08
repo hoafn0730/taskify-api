@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/', cardController.get);
 router.get('/up-next', cardController.getUpNext);
 router.get('/:slug', cardController.getOneBySlug);
-router.post('/', boardMiddleware.checkMemberRole('admin', 'owner'), cardValidation.store, cardController.store);
+router.post('/', cardValidation.store, cardController.store);
 router.post('/:cardId/toggle-assignee', cardController.toggleAssignee);
 router.post('/:id/files', boardMiddleware.checkMemberRole('admin', 'owner'), cardController.updateFile);
 router.put('/:id', boardMiddleware.checkMemberRole('admin', 'owner'), cardValidation.update, cardController.update);

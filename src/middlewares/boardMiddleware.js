@@ -32,6 +32,7 @@ const checkMemberRole = (...roles) => {
                     where: req.params,
                     attributes: ['boardId'],
                 });
+                console.log('🚀 ~ return ~ column:', column);
 
                 if (!column) {
                     return next(new ApiError(StatusCodes.NOT_FOUND, 'Board not found!'));

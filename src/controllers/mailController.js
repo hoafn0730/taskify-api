@@ -144,10 +144,10 @@ const send = async (req, res, next) => {
         }
 
         const mailOptions = {
-            from: `"MyApp" <${process.env.GMAIL_ADDRESS}>`,
+            from: `"Taskify" <${process.env.GMAIL_ADDRESS}>`,
             to: user.email,
-            subject: mail.subject || 'Thông báo từ MyApp',
-            html: mail.message || '<p>Đây là nội dung email từ MyApp.</p>',
+            subject: mail.subject || 'Thông báo từ Taskify',
+            html: mail.message || '<p>Đây là nội dung email từ Taskify.</p>',
         };
 
         const info = await transporter.sendMail(mailOptions);

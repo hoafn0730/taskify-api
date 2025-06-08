@@ -55,7 +55,7 @@ const store = async (req, res, next) => {
         // Tạo invoice tương ứng
         const invoice = await invoiceService.store({
             userId: req.user.id,
-            code: `INV-${data.code}`,
+            code: `INV-${data?.code || data?.id}`,
             amount: data.transferAmount,
             status: 'paid',
             dueDate: data.transactionDate || new Date(),
