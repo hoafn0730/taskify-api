@@ -2,51 +2,62 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Users', {
+        await queryInterface.createTable('Cards', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER,
             },
-
-            uid: {
+            boardId: {
+                type: Sequelize.INTEGER,
+            },
+            columnId: {
+                type: Sequelize.INTEGER,
+            },
+            title: {
+                type: Sequelize.STRING,
+            },
+            description: {
+                type: Sequelize.TEXT,
+            },
+            image: {
+                type: Sequelize.STRING,
+            },
+            slug: {
                 type: Sequelize.STRING,
                 unique: true,
             },
-            username: {
+            shortLink: {
                 type: Sequelize.STRING,
             },
-            email: {
+            uuid: {
                 type: Sequelize.STRING,
             },
-            password: {
-                type: Sequelize.STRING,
-            },
-            displayName: {
-                type: Sequelize.STRING,
-            },
-            phoneNumber: {
-                type: Sequelize.STRING,
-            },
-            address: {
-                type: Sequelize.STRING,
-            },
-            avatar: {
-                type: Sequelize.STRING,
-            },
-            type: {
-                type: Sequelize.STRING,
-            },
-            role: {
-                type: Sequelize.STRING,
-            },
-            status: {
-                type: Sequelize.STRING,
-            },
-            lastActivity: {
-                allowNull: true,
+            dueStart: {
                 type: Sequelize.DATE,
+            },
+            dueDate: {
+                type: Sequelize.DATE,
+            },
+            dueComplete: {
+                type: Sequelize.BOOLEAN,
+            },
+            dueReminder: {
+                type: Sequelize.INTEGER,
+            },
+            archivedAt: {
+                type: Sequelize.DATE,
+                allowNull: true,
+            },
+            priority: {
+                type: Sequelize.STRING,
+            },
+            labels: {
+                type: Sequelize.STRING,
+            },
+            cardCode: {
+                type: Sequelize.STRING,
             },
             createdAt: {
                 allowNull: false,
@@ -63,6 +74,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Users');
+        await queryInterface.dropTable('Cards');
     },
 };

@@ -34,14 +34,11 @@ module.exports = {
                 allowNull: false, // Ràng buộc NOT NULL
                 defaultValue: false, // Giá trị mặc định
             },
-            position: {
-                type: Sequelize.INTEGER,
-                allowNull: true, // Không bắt buộc
-            },
             lastView: {
                 type: Sequelize.DATE,
                 allowNull: true, // Không bắt buộc
             },
+
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,

@@ -2,55 +2,41 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Cards', {
+        await queryInterface.createTable('Boards', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER,
             },
-            boardId: {
-                type: Sequelize.INTEGER,
-            },
-            columnId: {
-                type: Sequelize.INTEGER,
-            },
+
             title: {
                 type: Sequelize.STRING,
             },
             description: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
             },
-            image: {
+            type: {
                 type: Sequelize.STRING,
             },
             slug: {
                 type: Sequelize.STRING,
-                unique: true,
+            },
+            image: {
+                type: Sequelize.STRING,
             },
             shortLink: {
                 type: Sequelize.STRING,
             },
-            uuid: {
+            tags: {
                 type: Sequelize.STRING,
             },
-            dueStart: {
-                type: Sequelize.DATE,
+            columnOrderIds: {
+                type: Sequelize.JSON,
+                allowNull: false,
+                defaultValue: [],
             },
-            dueDate: {
-                type: Sequelize.DATE,
-            },
-            dueComplete: {
-                type: Sequelize.BOOLEAN,
-            },
-            dueReminder: {
-                type: Sequelize.INTEGER,
-            },
-            archivedAt: {
-                type: Sequelize.DATE,
-                allowNull: true,
-            },
-            priority: {
+            boardCode: {
                 type: Sequelize.STRING,
             },
             createdAt: {
@@ -68,6 +54,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Cards');
+        await queryInterface.dropTable('Boards');
     },
 };
