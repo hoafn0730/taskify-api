@@ -12,22 +12,10 @@ module.exports = {
             workspaceId: {
                 type: Sequelize.INTEGER,
                 allowNull: false, // Ràng buộc NOT NULL
-                references: {
-                    model: 'Workspaces', // Tên bảng liên kết
-                    key: 'id', // Khóa chính trong bảng Workspaces
-                },
-                onDelete: 'CASCADE', // Xóa liên kết khi workspace bị xóa
-                onUpdate: 'CASCADE', // Cập nhật liên kết khi workspace bị cập nhật
             },
             boardId: {
                 type: Sequelize.INTEGER,
                 allowNull: false, // Ràng buộc NOT NULL
-                references: {
-                    model: 'Boards', // Tên bảng liên kết
-                    key: 'id', // Khóa chính trong bảng Boards
-                },
-                onDelete: 'CASCADE', // Xóa liên kết khi board bị xóa
-                onUpdate: 'CASCADE', // Cập nhật liên kết khi board bị cập nhật
             },
             starred: {
                 type: Sequelize.BOOLEAN,

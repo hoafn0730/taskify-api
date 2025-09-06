@@ -54,7 +54,7 @@ const signUp = async (data) => {
         email: data.email,
         username: data.username,
         password: hashPassword,
-        fullName: data.username,
+        displayName: data.displayName,
         type: 'LOCAL',
     });
 

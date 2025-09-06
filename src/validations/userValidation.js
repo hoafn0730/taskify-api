@@ -7,7 +7,7 @@ const store = async (req, res, next) => {
         uid: Joi.string().required().strict(),
         username: Joi.string().required().min(3).max(50).trim().strict(),
         email: Joi.string().required().min(3).max(255).trim().strict(),
-        fullName: Joi.string().required().min(3).max(255).trim().strict(),
+        displayName: Joi.string().required().min(3).max(255).trim().strict(),
         avatar: Joi.string().required().min(3).max(255).trim().strict(),
     });
 

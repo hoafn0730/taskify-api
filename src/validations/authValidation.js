@@ -26,7 +26,7 @@ const signUp = async (req, res, next) => {
             .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
             .required(),
         password: Joi.string().min(6).max(50).required(),
-        fullName: Joi.string().min(3).max(50).required(),
+        displayName: Joi.string().min(3).max(50).required(),
     });
 
     try {
