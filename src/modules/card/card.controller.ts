@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Req 
 import { CardService } from './card.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { RequestWithUser } from '../../common/interfaces/request-with-user.interface';
+import type { RequestWithUser } from '../../common/interfaces/request-with-user.interface';
 import { CreateCardDto, UpdateCardDto, UpdateFileDto } from './dto/card.dto';
 
 @ApiTags('Card')

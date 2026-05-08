@@ -14,8 +14,8 @@ export class CheckItem extends BaseEntity {
     @Column({ nullable: true })
     title: string;
 
-    @Column({ default: 'incomplete' })
-    status: string;
+    @Column({ default: false })
+    status: boolean;
 
     @ManyToOne(() => Card)
     @JoinColumn({ name: 'cardId' })

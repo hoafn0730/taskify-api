@@ -11,6 +11,9 @@ export class Workspace extends BaseEntity {
     title: string;
 
     @Column({ nullable: true })
+    description: string;
+
+    @Column({ nullable: true })
     type: string;
 
     @OneToMany(() => WorkspaceBoard, (workspaceBoard) => workspaceBoard.workspace)

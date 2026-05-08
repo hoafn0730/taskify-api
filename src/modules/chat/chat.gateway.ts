@@ -17,7 +17,7 @@ import { User } from '../../entities/user.entity';
 import { Participant } from '../../entities/participant.entity';
 import { Message } from '../../entities/message.entity';
 import { Conversation } from '../../entities/conversation.entity';
-import { SocketWithUser } from '../../common/interfaces/socket-with-user.interface';
+import type { SocketWithUser } from '../../common/interfaces/socket-with-user.interface';
 
 interface ConnectedUserInfo {
     userId: number;

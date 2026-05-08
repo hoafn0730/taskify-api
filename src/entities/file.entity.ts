@@ -12,8 +12,8 @@ export class File extends BaseEntity {
     @Column({ nullable: true })
     preview: string;
 
-    @Column({ nullable: true })
-    size: string;
+    @Column({ type: 'int', nullable: true })
+    size: number;
 
     @Column({ nullable: true })
     type: string;

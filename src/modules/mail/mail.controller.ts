@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Req 
 import { MailService } from './mail.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { RequestWithUser } from '../../common/interfaces/request-with-user.interface';
+import type { RequestWithUser } from '../../common/interfaces/request-with-user.interface';
 import { SaveMailDto } from './dto/mail.dto';
 
 @ApiTags('Mail')

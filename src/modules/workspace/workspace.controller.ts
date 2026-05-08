@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Req } from 
 import { WorkspaceService } from './workspace.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { RequestWithUser } from '../../common/interfaces/request-with-user.interface';
+import type { RequestWithUser } from '../../common/interfaces/request-with-user.interface';
 import { CreateWorkspaceDto, UpdateWorkspaceDto } from './dto/workspace.dto';
 
 @ApiTags('Workspace')

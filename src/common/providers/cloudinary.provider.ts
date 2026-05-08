@@ -12,7 +12,7 @@ export class CloudinaryProvider {
         });
     }
 
-    async uploadFile(file: string | Express.Multer.File): Promise<UploadApiResponse> {
+    async uploadFile(file: string | any): Promise<UploadApiResponse> {
         return new Promise((resolve, reject) => {
             const uploadPath = typeof file === 'string' ? file : file.path;
             cloudinary.uploader.upload(

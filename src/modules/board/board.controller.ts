@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Req,
 import { BoardService } from './board.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { RequestWithUser } from '../../common/interfaces/request-with-user.interface';
+import type { RequestWithUser } from '../../common/interfaces/request-with-user.interface';
 import { CreateBoardDto, UpdateBoardDto, GenerateBoardDto, InviteToBoardDto, AcceptInviteDto } from './dto/board.dto';
 
 @ApiTags('Board')
@@ -85,7 +85,7 @@ export class BoardController {
 
     @ApiOperation({ summary: 'Update board background' })
     @Post(':id/background')
-    async updateBackground(@Param('id') id: number, @Body() data: { file: Express.Multer.File }) {
+    async updateBackground(@Param('id') id: number, @Body() data: { file: any }) {
         const board = await this.boardService.updateBackground(id, data.file);
         return {
             statusCode: HttpStatus.OK,

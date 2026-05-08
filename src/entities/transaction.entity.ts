@@ -43,6 +43,9 @@ export class Transaction extends BaseEntity {
     @Column({ type: 'text', nullable: true })
     body: string;
 
+    @Column({ nullable: true })
+    status: string;
+
     @ManyToOne(() => Invoice)
     @JoinColumn({ name: 'invoiceId' })
     invoice: Invoice;

@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Req 
 import { PaymentService } from './payment.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { RequestWithUser } from '../../common/interfaces/request-with-user.interface';
+import type { RequestWithUser } from '../../common/interfaces/request-with-user.interface';
 import { CreatePaymentDto, UpdateTransactionDto } from './dto/payment.dto';
 
 @ApiTags('Payment')
@@ -40,3 +40,4 @@ export class PaymentController {
         return this.paymentService.delete(id);
     }
 }
+

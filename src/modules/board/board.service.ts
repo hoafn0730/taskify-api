@@ -254,7 +254,7 @@ export class BoardService {
     }
 
     async generate(content: string, userId: number) {
-        const data: GeminiGeneratedData = await this.geminiProvider.googleAIGenerate(content);
+        const data = (await this.geminiProvider.googleAIGenerate(content)) as GeminiGeneratedData;
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
@@ -316,7 +316,7 @@ export class BoardService {
                                     checklistId: savedChecklist.id,
                                     cardId: savedCard.id,
                                     title: ciData.title,
-                                    status: ciData.status,
+                                    status: ciData.status === 'complete',
                                 });
                                 await queryRunner.manager.save(checkItem);
                             }
@@ -337,7 +337,7 @@ export class BoardService {
         }
     }
 
-    async updateBackground(boardId: number, file: Express.Multer.File) {
+    async updateBackground(boardId: number, file: any) {
         const board = await this.boardRepository.findOne({ where: { id: boardId } });
         if (!board) throw new NotFoundException('Board not found');
 

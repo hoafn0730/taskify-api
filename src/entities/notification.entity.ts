@@ -13,8 +13,17 @@ export class Notification extends BaseEntity {
     @Column({ nullable: true })
     title: string;
 
+    @Column({ type: 'text', nullable: true })
+    content: string;
+
     @Column({ nullable: true })
     type: string;
+
+    @Column({ nullable: true })
+    link: string;
+
+    @Column({ default: false })
+    isRead: boolean;
 
     @Column({ nullable: true })
     status: string;

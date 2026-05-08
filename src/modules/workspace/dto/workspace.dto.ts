@@ -5,7 +5,7 @@ export class CreateWorkspaceDto {
     @ApiProperty({ example: 'My Workspace' })
     @IsString()
     @IsNotEmpty()
-    name: string;
+    title: string;
 
     @ApiProperty({ example: 'Workspace description', required: false })
     @IsString()
@@ -17,7 +17,7 @@ export class UpdateWorkspaceDto {
     @ApiProperty({ example: 'Updated Workspace Name', required: false })
     @IsString()
     @IsOptional()
-    name?: string;
+    title?: string;
 
     @ApiProperty({ example: 'Updated description', required: false })
     @IsString()
