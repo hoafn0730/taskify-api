@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('WorkspaceBoards', {
+        await queryInterface.createTable('workspace_boards', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -38,15 +38,15 @@ module.exports = {
         });
 
         // Tạo unique constraint cho workspaceId và boardId
-        await queryInterface.addConstraint('WorkspaceBoards', {
+        await queryInterface.addConstraint('workspace_boards', {
             fields: ['workspaceId', 'boardId'],
             type: 'unique',
-            name: 'unique_workspace_board', // Tên constraint
+            name: 'uq_workspace_boards_workspaceId_boardId', // Tên constraint
         });
     },
-    async down(queryInterface, Sequelize) {
+    async down(queryInterface) {
         // Xóa constraint trước khi xóa bảng
-        await queryInterface.removeConstraint('WorkspaceBoards', 'unique_workspace_board');
-        await queryInterface.dropTable('WorkspaceBoards');
+        await queryInterface.removeConstraint('workspace_boards', 'uq_workspace_boards_workspaceId_boardId');
+        await queryInterface.dropTable('workspace_boards');
     },
 };

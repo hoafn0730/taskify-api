@@ -7,6 +7,7 @@ module.exports = {
         port: process.env.DB_PORT || 3306,
         dialect: process.env.DB_CONNECTION || 'mysql',
         logging: false,
+        migrationStorageTableName: 'sequelize_meta',
     },
     test: {
         username: process.env.DB_USERNAME,
@@ -16,6 +17,7 @@ module.exports = {
         port: process.env.DB_PORT,
         dialect: process.env.DB_CONNECTION || 'mysql',
         logging: false,
+        migrationStorageTableName: 'sequelize_meta',
     },
     production: {
         username: process.env.DB_USERNAME,
@@ -25,6 +27,7 @@ module.exports = {
         port: process.env.DB_PORT,
         dialect: process.env.DB_CONNECTION || 'mysql',
         logging: false,
+        migrationStorageTableName: 'sequelize_meta',
         dialectOptions: {
             ssl: {
                 require: true,

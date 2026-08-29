@@ -1,9 +1,17 @@
 openapi: 3.0.0
 info:
-    title: My API
+    title: Taskify API
     version: 1.0.0
     description: API documentation
 basePath: '/api/v1'
+components:
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+security:
+    - bearerAuth: []
 paths:
     /boards:
         get:
@@ -37,12 +45,12 @@ paths:
             tags:
                 - Boards
             parameters:
-                in: path
-                name: id
-                required: true
-                schema:
-                    type: string
-                description: ID của bảng
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+                  description: ID của bảng
             requestBody:
                 required: true
                 content:
@@ -62,12 +70,353 @@ paths:
             tags:
                 - Boards
             parameters:
-                in: path
-                name: id
-                required: true
-                schema:
-                    type: string
-                description: ID của bảng
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+                  description: ID của bảng
             responses:
                 200:
                     description: Bảng được xóa thành công.
+    /auth/me:
+        get:
+            summary: Lấy thông tin người dùng hiện tại
+            tags:
+                - Auth
+            responses:
+                200:
+                    description: Thành công.
+    /auth/sign-up:
+        post:
+            summary: Đăng ký tài khoản mới
+            tags:
+                - Auth
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                email:
+                                    type: string
+                                password:
+                                    type: string
+                                name:
+                                    type: string
+            responses:
+                201:
+                    description: Thành công.
+    /auth/sign-in:
+        post:
+            summary: Đăng nhập
+            tags:
+                - Auth
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                email:
+                                    type: string
+                                password:
+                                    type: string
+            responses:
+                200:
+                    description: Thành công.
+    /auth/sign-out:
+        delete:
+            summary: Đăng xuất
+            tags:
+                - Auth
+            responses:
+                200:
+                    description: Thành công.
+    /columns:
+        post:
+            summary: Tạo cột mới
+            tags:
+                - Columns
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                title:
+                                    type: string
+                                boardId:
+                                    type: string
+            responses:
+                201:
+                    description: Thành công.
+    /columns/{id}:
+        get:
+            summary: Lấy chi tiết cột
+            tags:
+                - Columns
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Thành công.
+        put:
+            summary: Cập nhật cột
+            tags:
+                - Columns
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                title:
+                                    type: string
+            responses:
+                200:
+                    description: Thành công.
+        delete:
+            summary: Xóa cột
+            tags:
+                - Columns
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Thành công.
+    /columns/{id}/cards:
+        delete:
+            summary: Xóa tất cả thẻ trong cột
+            tags:
+                - Columns
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Thành công.
+    /cards:
+        get:
+            summary: Lấy danh sách thẻ
+            tags:
+                - Cards
+            responses:
+                200:
+                    description: Thành công.
+        post:
+            summary: Tạo thẻ mới
+            tags:
+                - Cards
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                title:
+                                    type: string
+                                columnId:
+                                    type: string
+            responses:
+                201:
+                    description: Thành công.
+    /cards/up-next:
+        get:
+            summary: Lấy thẻ tiếp theo
+            tags:
+                - Cards
+            responses:
+                200:
+                    description: Thành công.
+    /cards/{slug}:
+        get:
+            summary: Lấy chi tiết thẻ theo slug
+            tags:
+                - Cards
+            parameters:
+                - in: path
+                  name: slug
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Thành công.
+    /cards/{id}:
+        put:
+            summary: Cập nhật thẻ
+            tags:
+                - Cards
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+            responses:
+                200:
+                    description: Thành công.
+        delete:
+            summary: Xóa thẻ
+            tags:
+                - Cards
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Thành công.
+    /cards/{cardId}/toggle-assignee:
+        post:
+            summary: Bật/tắt người thực hiện
+            tags:
+                - Cards
+            parameters:
+                - in: path
+                  name: cardId
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Thành công.
+    /cards/{id}/files:
+        post:
+            summary: Thêm tệp vào thẻ
+            tags:
+                - Cards
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Thành công.
+    /cards/{id}/files/{fileId}:
+        delete:
+            summary: Xóa tệp khỏi thẻ
+            tags:
+                - Cards
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+                - in: path
+                  name: fileId
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Thành công.
+    /users/online:
+        get:
+            summary: Lấy danh sách người dùng trực tuyến
+            tags:
+                - Users
+            responses:
+                200:
+                    description: Thành công.
+    /users:
+        get:
+            summary: Lấy danh sách người dùng
+            tags:
+                - Users
+            responses:
+                200:
+                    description: Thành công.
+        post:
+            summary: Tạo người dùng mới
+            tags:
+                - Users
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+            responses:
+                201:
+                    description: Thành công.
+    /users/{id}:
+        get:
+            summary: Lấy chi tiết người dùng
+            tags:
+                - Users
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Thành công.
+        put:
+            summary: Cập nhật người dùng
+            tags:
+                - Users
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+            responses:
+                200:
+                    description: Thành công.
+        delete:
+            summary: Xóa người dùng
+            tags:
+                - Users
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Thành công.

@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('PostFavorites', {
+        await queryInterface.createTable('post_favorites', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -36,12 +36,12 @@ module.exports = {
         });
 
         // Tạo unique constraint để tránh duplicate favorites
-        await queryInterface.addIndex('PostFavorites', ['postId', 'userId'], {
+        await queryInterface.addIndex('post_favorites', ['postId', 'userId'], {
             unique: true,
-            name: 'unique_post_user_favorite',
+            name: 'uq_post_favorites_postId_userId',
         });
     },
-    async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('PostFavorites');
+    async down(queryInterface) {
+        await queryInterface.dropTable('post_favorites');
     },
 };
